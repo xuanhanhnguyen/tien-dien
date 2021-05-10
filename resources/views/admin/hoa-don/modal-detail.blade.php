@@ -32,8 +32,8 @@
                                 </div>
                             </div>
                             <p><span class="text-primary font-weight-bold">Tên khách hàng: </span> <span
-                                        class="font-weight-bold">Nguyễn Xuân Hạnh</span></p>
-                            <p><span class="text-primary">Địa chỉ: </span> <span class="font-weight-bold">Nguyễn Xuân Hạnh</span>
+                                        class="font-weight-bold">Lê Hiền</span></p>
+                            <p><span class="text-primary">Địa chỉ: </span> <span class="font-weight-bold">Lê Hiền</span>
                             </p>
                             <div class="row">
                                 <div class="col-3">
