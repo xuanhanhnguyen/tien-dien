@@ -27,30 +27,36 @@
                                 <div class="card-body">
                                     <div class="form-group">
                                         <label for="inputUserName">Tên đăng nhập</label>
-                                        <input type="text" class="form-control" id="inputUserName"
-                                               placeholder="Tên đăng nhập" value="{{$user->name}}" name="username">
+                                        <input type="text" class="form-control" id="inputUserName" disabled
+                                               placeholder="Tên đăng nhập" value="{{$user->username}}" name="username">
                                     </div>
+
                                     <div class="form-group d-flex">
-                                        <input type="checkbox" class="mr-3 mt-1 checkbox">
-                                        <label>Change Password</label>
+                                        <input onchange="$('#change-password').toggle()" id="check-password"
+                                               type="checkbox"
+                                               name="_password"
+                                               class="mr-3 mt-1 checkbox">
+                                        <label for="check-password">Thay đổi mật khẩu</label>
                                     </div>
-                                    <div class="form-group password">
-                                        <label for="exampleInputPassword">Mật khẩu</label>
+
+                                    <div class="form-group password" id="change-password" style="display: none">
+                                        <label for="password">Mật khẩu</label>
                                         <input type="password" class="form-control" name="password"
-                                               id="exampleInputPassword1=" placeholder="Password">
+                                               id="password" placeholder="Password">
                                     </div>
+
                                     <div class="form-row">
                                         <div class="form-group col-md-6">
                                             <label for="inputFirstName">Họ</label>
                                             <input type="text" class="form-control" id="inputFirstName"
                                                    value="{{$user->firstname}}" name="firstname"
-                                                   placeholder="Nhập họ">
+                                                   placeholder="Nhập họ" required>
                                         </div>
                                         <div class="form-group col-md-6">
                                             <label for="inputLastName">Tên</label>
                                             <input type="text" class="form-control" id="inputLastName"
                                                    value="{{$user->lastname}}" name="lastname"
-                                                   placeholder="Nhập tên">
+                                                   placeholder="Nhập tên" required>
                                         </div>
                                     </div>
                                     <div class="form-group">
@@ -63,7 +69,7 @@
                                         <label for="exampleInputPhone">Số điện thoại</label>
                                         <input type="text" class="form-control" id="exampleInputPhone" name="phone"
                                                aria-describedby="phoneHelp" value="{{$user->phone}}"
-                                               placeholder="Nhập sô điện thoại">
+                                               placeholder="Nhập sô điện thoại" required>
                                     </div>
                                     <div class="form-group">
                                         <label>Giới tính</label>
@@ -99,14 +105,20 @@
                                             </div>
                                         </div>
                                     </div>
-                                <!-- <div class="form-group">
+                                    <div class="form-group">
                                         <label for="exampleInputRole">Quyền</label><br>
                                         <select class="form-control ls-select2" name="role">
-                                            <option @if($user->role == 'Admin') checked='checked' @endif value="Admin">Admin</option>
-                                            <option @if($user->role == 'Nhân Viên') checked='checked' @endif value="Nhân Viên">Nhân viên</option>
-                                            <option @if($user->role == 'Khách hàng') checked='checked' @endif value="Khách hàng">Khách hàng</option>
+                                            <option @if($user->role == 'Admin') checked='checked' @endif value="Admin">
+                                                Admin
+                                            </option>
+                                            <option @if($user->role == 'Nhân Viên') checked='checked'
+                                                    @endif value="Nhân Viên">Nhân viên
+                                            </option>
+                                            <option @if($user->role == 'Khách hàng') checked='checked'
+                                                    @endif value="Khách hàng">Khách hàng
+                                            </option>
                                         </select>
-                                    </div> -->
+                                    </div>
                                 </div>
                             </div>
                             @csrf

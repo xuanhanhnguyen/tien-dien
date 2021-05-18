@@ -21,10 +21,7 @@ Route::get('/', [
 |
 */
 
-Route::group([
-    'prefix' => 'admin',
-//    'middleware' => 'auth'
-], function () {
+Route::group(['prefix' => 'admin', 'middleware' => 'auth'], function () {
 
     // Dashboard
     //----------------------------------
@@ -109,6 +106,9 @@ Route::group([
     Route::get('users/admin', [
         'as' => 'admin.user.admin', 'uses' => 'UsersController@getAdmin'
     ]);
+
+    Route::get('user/profile', ['as' => 'admin.user.profile', 'uses' => 'UsersController@show']);
+
     Route::get('users/khach_hang', [
         'as' => 'admin.user.khachhang', 'uses' => 'UsersController@getKhachHang'
     ]);
@@ -138,18 +138,20 @@ Route::group([
 
     Route::resource('users', 'UsersController');
 
-    Route::resource('dienke', 'DienKeController');
-    Route::get('dienke/delete/{id}', [
-        'as' => 'dienke.delete', 'uses' => 'DienKeController@destroy'
-    ]);
+//    Route::resource('dienke', 'DienKeController');
+//    Route::get('dienke/delete/{id}', [
+//        'as' => 'dienke.delete', 'uses' => 'DienKeController@destroy'
+//    ]);
 
     Route::get('users/hoadon/xacnhan/{id}', [
         'as' => 'hoadon.xacnhan', 'uses' => 'HoaDonController@update'
     ]);
 
+    Route::resource('muc-cap-dien', 'MucCapDienController');
     Route::resource('khu-vuc', 'KhuVucController');
     Route::resource('dksd-dien', 'DKSDDienController');
     Route::resource('hoa-don', 'HoaDonController');
+    Route::get('dien-ke', 'HoaDonController@index');
     // Settings
     //----------------------------------
 });

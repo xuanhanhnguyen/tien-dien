@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use Auth;
@@ -10,21 +11,23 @@ class AuthController extends Controller
 {
     public function login()
     {
+        if (Auth::check()) {
+            return redirect()->to('/admin');
+        }
         return view('admin.sessions.login');
     }
 
     public function postLogin(Requests\LoginRequest $request)
     {
         if (User::login($request)) {
-            flash('Welcome to Laraspace.')->success('Welcome to Laraspace.');
-            if (Auth::user()->isAdmin() || Auth::user()->isStaff) {
+            if (Auth::user()->isAdmin() || Auth::user()->isStaff()) {
                 return redirect()->to('/admin');
             } else {
                 return redirect()->to('/');
             }
         }
-        flash('Invalid Login Credentials')->error('Invalid Login Credentials');
-        
+        flash('message')->error('Tài khoản hoặc mật khẩu không chính xác, vui lòng thử lại.');
+
         return redirect()->back();
     }
 

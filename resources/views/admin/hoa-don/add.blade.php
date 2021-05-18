@@ -3,7 +3,7 @@
 @section('content')
     <div class="main-content page-profile">
         <div class="page-header">
-            <h3 class="page-title">Chỉnh sửa hóa đơn</h3>
+            <h3 class="page-title">Thêm hóa đơn tiền điện</h3>
             <ol class="breadcrumb">
                 <li class="breadcrumb-item">
                     <a href="#" onclick="window.history.back()">
@@ -16,35 +16,34 @@
             <div class="col-sm-12">
                 <div class="card">
                     <div class="card-body">
-                        <form action="{{route('hoa-don.update',$hd->ma_hoa_don)}}" method="POST">
+                        <form action="{{route('hoa-don.store')}}" method="POST">
                             @csrf
-                            @method('PUT')
                             <div class="modal-body">
                                 <div class="card-body">
 
                                     <div class="form-group">
-                                        <label for="">Mã hóa đơn</label>
-                                        <input value="{{$hd->ma_hoa_don}}" disabled
-                                               class="form-control" required>
-                                    </div>
-
-                                    <div class="form-group">
                                         <label for="ma_dksd_dien">Mã hồ sơ</label>
-                                        <input type="text"
-                                               value="{{$hd->ma_dksd_dien}} - {{$hd->ho_so->kh->id}} - {{$hd->ho_so->kh->name}} __ {{$hd->ho_so->dia_chi}}"
-                                               class="form-control" disabled>
+                                        <select onchange="location.href = '/admin/hoa-don/create?id='+$('#ma_dksd_dien').val()"
+                                                class="form-control" name="ma_dksd_dien" id="ma_dksd_dien" required>
+                                            <option value="">Chọn hồ sơ</option>
+                                            @foreach($dksd as $item)
+                                                <option @if($hs->ma_dksd_dien == $item->ma_dksd_dien) selected
+                                                        @endif value="{{$item->ma_dksd_dien}}">{{$item->ma_dksd_dien}}
+                                                    - {{$item->kh->id}} - {{$item->kh->name}}
+                                                    __ {{$item->dia_chi}}</option>
+                                            @endforeach
+                                        </select>
                                         <small id="ma_dksd_dien" class="form-text text-muted">
                                             Mã hồ sơ - Mã khách hàng - Tên khách hàng __ Địa chỉ
                                         </small>
                                     </div>
 
-                                    @if($hd->ho_so->mcd->loai_gia == 2)
+                                    @if(isset($hs->mcd) && $hs->mcd->loai_gia == 2)
                                         <div class="form-group">
-                                            <label for="tu_so[binh_thuong]">Từ số</label>
+                                            <label for="tu_so['binh_thuong']">Từ số</label>
                                             <div class="row">
                                                 <div class="col-md-4">
-                                                    <input type="number" value="{{$hd->chi_so_cu->binh_thuong}}"
-                                                           class="form-control"
+                                                    <input type="number" value="0" class="form-control"
                                                            id="tu_so['binh_thuong']"
                                                            placeholder="Nhập số"
                                                            name="chi_so_cu[binh_thuong]" required>
@@ -54,8 +53,7 @@
                                                 </div>
 
                                                 <div class="col-md-4">
-                                                    <input type="number" value="{{$hd->chi_so_cu->thap_diem}}"
-                                                           class="form-control"
+                                                    <input type="number" value="0" class="form-control"
                                                            id="tu_so['thap_diem']"
                                                            placeholder="Nhập số"
                                                            name="chi_so_cu[thap_diem]" required>
@@ -65,8 +63,7 @@
                                                 </div>
 
                                                 <div class="col-md-4">
-                                                    <input type="number" value="{{$hd->chi_so_cu->cao_diem}}"
-                                                           class="form-control"
+                                                    <input type="number" value="0" class="form-control"
                                                            id="tu_so['cao_diem']"
                                                            placeholder="Nhập số"
                                                            name="chi_so_cu[cao_diem]" required>
@@ -81,8 +78,7 @@
                                             <label for="den_so">Đến số</label>
                                             <div class="row">
                                                 <div class="col-md-4">
-                                                    <input type="number" value="{{$hd->chi_so_moi->binh_thuong}}"
-                                                           class="form-control"
+                                                    <input type="number" value="0" class="form-control"
                                                            id="den_so[binh_thuong]"
                                                            placeholder="Nhập số"
                                                            name="chi_so_moi[binh_thuong]" required>
@@ -92,8 +88,7 @@
                                                 </div>
 
                                                 <div class="col-md-4">
-                                                    <input type="number" value="{{$hd->chi_so_moi->thap_diem}}"
-                                                           class="form-control"
+                                                    <input type="number" value="0" class="form-control"
                                                            id="den_so['thap_diem']"
                                                            placeholder="Nhập số"
                                                            name="chi_so_moi[thap_diem]" required>
@@ -103,8 +98,7 @@
                                                 </div>
 
                                                 <div class="col-md-4">
-                                                    <input type="number" value="{{$hd->chi_so_moi->cao_diem}}"
-                                                           class="form-control"
+                                                    <input type="number" value="0" class="form-control"
                                                            id="den_so['cao_diem']"
                                                            placeholder="Nhập số"
                                                            name="chi_so_moi[cao_diem]" required>
@@ -116,17 +110,15 @@
                                         </div>
                                     @else
                                         <div class="form-group">
-                                            <label for="tu_so">Từ số</label>
-                                            <input type="number" value="{{$hd->chi_so_cu}}" class="form-control"
-                                                   id="chi_so_cu"
+                                            <label for="chi_so_cu">Từ số</label>
+                                            <input type="number" value="0" class="form-control" id="chi_so_cu"
                                                    placeholder="Nhập số"
                                                    name="chi_so_cu" required>
                                         </div>
 
                                         <div class="form-group">
-                                            <label for="den_so">Đến số</label>
-                                            <input type="number" value="{{$hd->chi_so_moi}}" class="form-control"
-                                                   id="chi_so_moi"
+                                            <label for="chi_so_moi">Đến số</label>
+                                            <input type="number" value="0" class="form-control" id="chi_so_moi"
                                                    placeholder="Nhập số"
                                                    name="chi_so_moi" required>
                                         </div>
@@ -136,7 +128,6 @@
                                         <label for="tu_ngay">Từ ngày</label>
                                         <div class="input-group">
                                             <input type="text" class="form-control ls-datepicker"
-                                                   value="{{ $hd->tu_ngay }}"
                                                    name="tu_ngay" id="tu_ngay">
                                             <div class="input-group-append">
                                                 <span class="input-group-text">
@@ -150,7 +141,6 @@
                                         <label for="den_ngay">Đến ngày</label>
                                         <div class="input-group">
                                             <input type="text" class="form-control ls-datepicker"
-                                                   value="{{$hd->den_ngay}}"
                                                    name="den_ngay" id="den_ngay">
                                             <div class="input-group-append">
                                                 <span class="input-group-text">
@@ -163,30 +153,19 @@
                                     <div class="form-group">
                                         <label for="trang_thai">Trạng thái</label>
                                         <select class="form-control" name="trang_thai" id="trang_thai" required>
-                                            @if(Auth::user()->role == "Admin" || Auth::user()->role == "Nhân viên")
-                                                <option @if($hd->trang_thai == 1) selected
-                                                        @endif value="1">{{\App\HoaDon::STATUS[1]}}</option>
-                                                <option @if($hd->trang_thai == 2) selected
-                                                        @endif value="2">{{\App\HoaDon::STATUS[2]}}</option>
-                                            @endif
-                                            @if(Auth::user()->role == "Admin")
-                                                <option @if($hd->trang_thai == 3) selected
-                                                        @endif value="3">{{\App\HoaDon::STATUS[3]}}</option>
-                                                <option @if($hd->trang_thai == 4) selected
-                                                        @endif value="4">{{\App\HoaDon::STATUS[4]}}</option>
-                                                <option @if($hd->trang_thai == 0) selected
-                                                        @endif value="0">{{\App\HoaDon::STATUS[0]}}</option>
-                                            @endif
+                                            <option value="1">{{\App\HoaDon::STATUS[1]}}</option>
+                                            <option value="2">{{\App\HoaDon::STATUS[2]}}</option>
+                                            <option value="3">{{\App\HoaDon::STATUS[3]}}</option>
+                                            <option value="4">{{\App\HoaDon::STATUS[4]}}</option>
+                                            <option value="0">{{\App\HoaDon::STATUS[0]}}</option>
                                         </select>
                                     </div>
 
                                 </div>
                             </div>
                             <div class="modal-footer">
-                                <a href="{{route('khu-vuc.index')}}">
-                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
-                                </a>
-                                <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+                                <button type="submit" class="btn btn-primary">Thêm</button>
                             </div>
                         </form>
                     </div>

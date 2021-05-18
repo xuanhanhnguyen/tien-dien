@@ -41,9 +41,9 @@ class UsersController extends Controller
         return view('admin.users.listHoaDon')->with(['user' => $user, 'hoadon' => $hoadon]);
     }
 
-    public function show($id)
+    public function show()
     {
-        $user = User::findOrFail($id);
+        $user = User::findOrFail(\Auth::id());
         return view('admin.users.show')->with('user', $user);
     }
 
@@ -55,53 +55,76 @@ class UsersController extends Controller
 
     public function update(Request $request, $id)
     {
-        $user = User::findOrFail($id);
+        try {
+            $user = User::findOrFail($id);
 
-        $user->username = $request['username'];
-        $user->firstname = $request['firstname'];
-        $user->lastname = $request['lastname'];
-        $user->email = $request['email'];
-        $user->phone = $request['phone'];
-        $user->gender = (int)$request['gender'];
-        if (!empty($request['password'])) {
-            $user->password = bcrypt($request['password']);
-        }
-        $user->birthday = date('Y-m-d', strtotime($request['birthday']));
-        // $user->role = $request['role'];
+            $user->firstname = $request['firstname'];
+            $user->lastname = $request['lastname'];
+            $user->email = $request['email'];
+            $user->phone = $request['phone'];
+            $user->gender = (int)$request['gender'];
+            if ($request->has('_password')) {
+                $user->password = bcrypt($request['password']);
+            }
+            $user->birthday = date('Y-m-d', strtotime($request['birthday']));
+            $user->role = $request['role'];
 
-        $user->save();
-        if ($request['role'] == "Admin") {
-            return redirect()->route('admin.user.admin');
+            $user->save();
+
+            flash('message')->success('Cập nhật thành công.');
+
+            return redirect()->back();
+
+        } catch (\Exception $e) {
+            flash('error')->error('Cập nhật thất bại, vui lòng kiểm tra lại.');
+            return redirect()->back();
         }
-        if ($request['role'] == "Khách hàng") {
-            return redirect()->route('admin.user.khachhang');
-        }
-        return redirect()->route('admin.user.nhanvien');
     }
 
     public function create(Request $request)
     {
+        try {
 
-        $user = new User();
-        $user->username = $request['username'];
-        $user->firstname = $request['firstname'];
-        $user->lastname = $request['lastname'];
-        $user->email = $request['email'];
-        $user->phone = $request['phone'];
-        $user->gender = (int)$request['gender'];
-        $user->password = bcrypt($request['password']);
-        $user->birthday = date('Y-m-d', strtotime($request['birthday']));
-        $user->role = $request['role'];
-        $user->save();
-        return redirect()->back();
+            $user = new User();
+            $user->username = $request['username'];
+            $user->firstname = $request['firstname'];
+            $user->lastname = $request['lastname'];
+            $user->email = $request['email'];
+            $user->phone = $request['phone'];
+            $user->gender = (int)$request['gender'];
+            $user->password = bcrypt($request['password']);
+            $user->birthday = date('Y-m-d', strtotime($request['birthday']));
+            $user->role = $request['role'];
+            $user->save();
+
+            flash('message')->success('Thêm mới thành công.');
+
+            return redirect()->back();
+        } catch (\Exception $e) {
+            flash('error')->error('Thêm mới thất bại, vui lòng kiểm tra lại.');
+            return redirect()->back();
+        }
     }
 
     public function destroy($id)
     {
-        $user = User::findOrFail($id);
-        $user->delete();
-        // flash('User Deleted')->success();
+        try {
+            $user = User::findOrFail($id);
+            dd($user);
 
-        return redirect()->back();
+            if ($user->use->count() > 0) {
+                flash('error')->error('Xóa thất bại, tài khoản đã ĐKSD điện.');
+                return redirect()->back();
+            }
+
+            $user->delete();
+
+            flash('message')->success('Xóa thành công.');
+
+            return redirect()->back();
+        } catch (\Exception $e) {
+            flash('error')->error('Xóa thất bại, vui lòng kiểm tra lại.');
+            return redirect()->back();
+        }
     }
 }

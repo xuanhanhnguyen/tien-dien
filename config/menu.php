@@ -1,5 +1,7 @@
 <?php
 
+use App\User;
+
 return [
 
     /*
@@ -17,53 +19,73 @@ return [
 
     'sidebar' => [
         [
-            'title' => 'Dashboard',
+            'title' => 'Bảng tin',
             'link' => '/admin/dashboard/basic',
             'active' => 'admin/dashboard/basic',
             'icon' => 'icon-fa icon-fa-dashboard',
         ],
         [
-            'title' => 'Hóa đơn',
+            'title' => 'Điện kế',
             'link' => '/admin/hoa-don',
             'active' => 'admin/hoa-don',
-            'icon' => 'icon-fa icon-fa-list'
+            'icon' => 'icon-fa icon-fa-list',
+            'access' => [User::ROLE[0], User::ROLE[2]]
+        ],
+        [
+            'title' => 'Điện kế',
+            'link' => '/admin/dien-ke',
+            'active' => 'admin/dien-ke',
+            'icon' => 'icon-fa icon-fa-list',
+            'access' => [User::ROLE[1]]
         ],
         [
             'title' => 'Đăng ký sử dụng điện',
             'link' => '/admin/dksd-dien',
             'active' => 'admin/dksd-dien',
-            'icon' => 'icon-fa icon-fa-handshake-o'
+            'icon' => 'icon-fa icon-fa-handshake-o',
+            'access' => [User::ROLE[0]]
         ],
         [
             'title' => 'Loại điện',
             'link' => '/admin/loaidien',
             'active' => 'admin/loaidien',
-            'icon' => 'icon-fa icon-fa-th-large'
+            'icon' => 'icon-fa icon-fa-th-large',
+            'access' => [User::ROLE[0]]
+        ],
+        [
+            'title' => 'Mức Cấp điện',
+            'link' => '/admin/muc-cap-dien',
+            'active' => 'admin/muc-cap-dien',
+            'icon' => 'icon-fa icon-fa-th-large',
+            'access' => [User::ROLE[0]]
         ],
         [
             'title' => 'Giá điện',
             'link' => '/admin/giadien',
             'active' => 'admin/giadien',
-            'icon' => 'icon-fa icon-fa-money'
+            'icon' => 'icon-fa icon-fa-money',
+            'access' => [User::ROLE[0]]
         ],
         [
             'title' => 'Khu vực',
             'link' => '/admin/khu-vuc',
             'active' => '/admin/khu-vuc',
-            'icon' => 'icon-fa icon-fa-globe'
+            'icon' => 'icon-fa icon-fa-globe',
+            'access' => [User::ROLE[0]]
         ],
         [
             'title' => 'Tài khoản',
             'link' => '#',
             'active' => 'admin/user*',
             'icon' => 'icon-fa icon-fa-users',
+            'access' => [User::ROLE[0]],
             'children' => [
-//                [
-//                    'title' => 'Hồ sơ',
-//                    'link' => '/admin/user/profile',
-//                    'active' => '/admin/user/profile',
-//                    'icon' => 'icon-fa icon-fa-user',
-//                ],
+                [
+                    'title' => 'Hồ sơ',
+                    'link' => '/admin/user/profile',
+                    'active' => '/admin/user/profile',
+                    'icon' => 'icon-fa icon-fa-user',
+                ],
                 [
                     'title' => 'Danh sách người quản lý',
                     'link' => '/admin/users/admin',
@@ -79,6 +101,16 @@ return [
                     'link' => '/admin/users/nhan_vien',
                     'active' => '/admin/users/nhan_vien',
                 ],
+            ]
+        ],
+        [
+            'title' => 'Thống kê',
+            'link' => '#',
+            'active' => 'admin/thong-ke/*',
+            'icon' => 'icon-fa icon-fa-users',
+            'access' => [User::ROLE[0]],
+            'children' => [
+
             ]
         ],
     ],

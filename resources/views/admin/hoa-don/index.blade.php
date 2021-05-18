@@ -12,11 +12,12 @@
                 <li class="breadcrumb-item"><a href="{{route('admin.dashboard')}}">Trang chủ</a></li>
                 <li class="breadcrumb-item active">Đăng ký sử dụng điện</li>
             </ol>
-            <div class="page-actions">
-                <a href="#" class="btn btn-primary" data-toggle="modal" data-target=".ls-example-modal-lg"><i
-                            class="icon-fa icon-fa-plus"></i>Thêm mới</a>
-                <button class="btn btn-danger"><i class="icon-fa icon-fa-trash"></i> Xóa</button>
-            </div>
+            @if(Auth::user()->role === "Admin")
+                <div class="page-actions">
+                    <a href="/admin/hoa-don/create" class="btn btn-primary">
+                        <i class="icon-fa icon-fa-plus"></i>Thêm mới</a>
+                </div>
+            @endif
         </div>
 
         @if(count($errors) > 0)
@@ -55,41 +56,59 @@
                                 <th>Mã hóa đơn</th>
                                 <th>Mã hồ sơ</th>
                                 <th>Mã khách hàng</th>
+                                <th>Tên khách hàng</th>
                                 <th>Địa chỉ</th>
                                 <th>Chỉ số cũ</th>
                                 <th>Chỉ số mới</th>
-                                <th>HS Nhân</th>
-                                <th>ĐN Tiêu thụ</th>
-                                <th>Tổng tiền</th>
                                 <th>Trạng thái</th>
                                 <th>Ngày tạo</th>
                                 <th>Chức năng</th>
                             </tr>
                             </thead>
+
                             @foreach($hd as $item)
                                 <tr>
                                     <td>{{$item->ma_hoa_don}}</td>
                                     <td>{{$item->ho_so->ma_dksd_dien}}</td>
                                     <td>{{$item->ho_so->kh->id}}</td>
+                                    <td>{{$item->ho_so->kh->name}}</td>
                                     <td>{{$item->ho_so->dia_chi}}</td>
-                                    <td>{{$item->chi_so_cu}}</td>
-                                    <td>{{$item->chi_so_moi}}</td>
-                                    <td>{{$item->ho_so->hs_nhan}}</td>
-                                    <td>{{($item->chi_so_moi - $item->chi_so_cu) * $item->ho_so->hs_nhan}}</td>
-                                    <td>{{$item->tong_tien}}</td>
-                                    <td>{{$item->trang_thai}}</td>
+                                    <td>
+                                        @if($item->ho_so->mcd->loai_gia == 2)
+                                            @php
+                                                $_chi_so_cu = json_decode($item->chi_so_cu)
+                                            @endphp
+                                            <p>BT: {{$_chi_so_cu->binh_thuong}}</p>
+                                            <p>CD: {{$_chi_so_cu->cao_diem}}</p>
+                                            <p>TD: {{$_chi_so_cu->thap_diem}}</p>
+                                        @else
+                                            {{$item->chi_so_cu}}
+                                        @endif
+                                    </td>
+                                    <td>
+                                        @if($item->ho_so->mcd->loai_gia == 2)
+                                            @php
+                                                $_chi_so_moi = json_decode($item->chi_so_moi)
+                                            @endphp
+                                            <p>BT: {{$_chi_so_moi->binh_thuong}}</p>
+                                            <p>CD: {{$_chi_so_moi->cao_diem}}</p>
+                                            <p>TD: {{$_chi_so_moi->thap_diem}}</p>
+                                        @else
+                                            {{$item->chi_so_moi}}
+                                        @endif
+                                    </td>
+                                    <td>{{\App\HoaDon::STATUS[$item->trang_thai]}}</td>
                                     <td>{{$item->created_at}}</td>
                                     <td>
                                         <a href="{{route('hoa-don.show',$item->ma_hoa_don)}}"
                                            class="btn btn-default btn-sm" data-toggle="modal"
-                                           data-target=".modal-detail">
-                                            <i class="icon-fa icon-fa-plus"></i> Chi tiết</a>
-
-                                        <div class="d-flex mt-1">
-                                            <a href="{{route('hoa-don.edit',$item->ma_hoa_don)}}"
-                                               class="btn btn-default btn-sm"><i
-                                                        class="icon-fa icon-fa-edit"></i> Chỉnh sửa</a>
-                                            <form id="form-delete" class="ml-1"
+                                           data-target=".modal-detail-{{$item->ma_hoa_don}}">
+                                            <i class="icon-fa icon-fa-plus"></i> Hóa đơn</a>
+                                        <a href="{{route('hoa-don.edit',$item->ma_hoa_don)}}"
+                                           class="btn btn-default btn-sm"><i
+                                                    class="icon-fa icon-fa-edit"></i> Chỉnh sửa</a>
+                                        @if(Auth::user()->role === "Admin")
+                                            <form id="form-delete"
                                                   action="{{route('hoa-don.destroy',$item->ma_hoa_don)}}"
                                                   method="post">
                                                 @csrf
@@ -99,7 +118,7 @@
                                                    class="btn btn-default btn-sm">
                                                     <i class="icon-fa icon-fa-trash"></i> Xóa</a>
                                             </form>
-                                        </div>
+                                        @endif
                                     </td>
                                 </tr>
                             @endforeach
@@ -111,97 +130,311 @@
             </div>
         </div>
 
-        @include('admin.hoa-don.modal-detail')
+        @foreach($hd as $item)
+            <div class="modal fade modal-detail modal-detail-{{$item->ma_hoa_don}}" tabindex="-1" role="dialog"
+                 aria-labelledby="myLargeModalLabel"
+                 aria-hidden="true">
+                <div class="modal-dialog modal-lg" role="document">
+                    <div class="modal-content">
 
-        <div class="modal fade ls-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel"
-             aria-hidden="true">
-            <div class="modal-dialog modal-lg" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLabel">Thêm hóa đơn</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <form action="{{route('hoa-don.store')}}" method="POST">
-                        @csrf
                         <div class="modal-body">
-                            <div class="card-body">
-
-                                <div class="form-group">
-                                    <label for="ma_dksd_dien">Mã hồ sơ</label>
-                                    <select class="form-control" name="ma_dksd_dien" id="ma_dksd_dien" required>
-                                        <option value="">Chọn hồ sơ</option>
-                                        @foreach($hs as $item)
-                                            <option value="{{$item->ma_dksd_dien}}">{{$item->ma_dksd_dien}}
-                                                - {{$item->kh->id}} - {{$item->kh->name}} __ {{$item->dia_chi}}</option>
-                                        @endforeach
-                                    </select>
-                                    <small id="ma_dksd_dien" class="form-text text-muted">
-                                        Mã hồ sơ - Mã khách hàng - Tên khách hàng __ Địa chỉ
-                                    </small>
+                            <div class="card-body hd-detail">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                                <div class="hd-header text-center">
+                                    <h5 class="text-primary">HÓA ĐƠN GTGT (TIỀN ĐIỆN)</h5>
+                                    <p class="text-primary">Từ ngày 22/04/2021 Đến ngày 21/05/2021</p>
                                 </div>
-
-                                <div class="form-group">
-                                    <label for="">Chỉ số cũ</label>
-                                    <input type="number" value="0"
-                                           class="form-control" name="chi_so_cu" id="chi_so_cu"
-                                           placeholder="Nhập chỉ số cũ" required>
-                                </div>
-
-                                <div class="form-group">
-                                    <label for="">Chỉ số mới</label>
-                                    <input type="number" value="0"
-                                           class="form-control" name="chi_so_moi" id="chi_so_moi"
-                                           placeholder="Nhập chỉ số mới" required>
-                                </div>
-
-                                <div class="form-group">
-                                    <label for="tu_ngay">Từ ngày</label>
-                                    <div class="input-group">
-                                        <input type="text" class="form-control ls-datepicker"
-                                               name="tu_ngay" id="tu_ngay">
-                                        <div class="input-group-append">
-                                                <span class="input-group-text">
-                                                        <i class="icon-fa icon-fa-calendar"></i>
-                                                </span>
+                                <div class="hd-main">
+                                    <div class="info">
+                                        <p class="font-weight-bold">Điện lực Thành Phố Vinh</p>
+                                        <p><span class="text-primary">Địa chỉ: </span>
+                                            <span class="font-weight-bold">Số 10 - Đường Lê Duẩn - Phường Trung đô - TP.Vinh - Nghệ An</span>
+                                        </p>
+                                        <div class="row mb-2">
+                                            <div class="col-4">
+                                                <p><span class="text-primary">SĐT: </span> <span
+                                                            class="font-weight-bold">0383.939.393</span>
+                                                </p>
+                                            </div>
+                                            <div class="col-4">
+                                                <p><span class="text-primary">MST: </span> <span
+                                                            class="font-weight-bold">1010010041717 - 017</span>
+                                                </p>
+                                            </div>
+                                            <div class="col-4">
+                                                <p><span class="text-primary">ĐT Sửa chữa: </span> <span
+                                                            class="font-weight-bold text-danger">190067696</span></p>
+                                            </div>
                                         </div>
-                                    </div>
-                                </div>
-
-                                <div class="form-group">
-                                    <label for="den_ngay">Đến ngày</label>
-                                    <div class="input-group">
-                                        <input type="text" class="form-control ls-datepicker"
-                                               name="den_ngay" id="den_ngay">
-                                        <div class="input-group-append">
-                                                <span class="input-group-text">
-                                                        <i class="icon-fa icon-fa-calendar"></i>
-                                                </span>
+                                        <p><span class="text-primary font-weight-bold">Tên khách hàng: </span> <span
+                                                    class="font-weight-bold">{{$item->ho_so->kh->name}}</span></p>
+                                        <p><span class="text-primary">Địa chỉ: </span> <span
+                                                    class="font-weight-bold">{{$item->ho_so->kh->address}}</span>
+                                        </p>
+                                        <div class="row">
+                                            <div class="col-4">
+                                                <p><span class="text-primary">SĐT: </span> <span
+                                                            class="font-weight-bold">{{$item->ho_so->kh->phone}}</span>
+                                            </div>
+                                            <div class="col-4">
+                                                <p><span class="text-primary">MST: </span> <span
+                                                            class="font-weight-bold">1010010041717 - 017</span>
+                                            </div>
+                                            <div class="col-2">
+                                                <p>
+                                                    <span class="text-primary">Số công tơ: </span>{{$item->ho_so->ma_dksd_dien}}
+                                                </p>
+                                            </div>
+                                            <div class="col-2">
+                                                <p><span class="text-primary">Số hộ: </span> 1</p>
+                                            </div>
                                         </div>
+                                        <div class="row">
+                                            <div class="col-4">
+                                                <p><span class="text-primary">Mã KH: </span> <span
+                                                            class="font-weight-bold text-danger">{{$item->ho_so->ma_khach_hang}}</span>
+                                            </div>
+                                            <div class="col-4">
+                                                <p><span class="text-primary">Mã HD: </span> <span
+                                                            class="font-weight-bold text-danger">{{$item->ma_hoa_don}}</span>
+                                            </div>
+                                            <div class="col-2">
+                                                <p>
+                                                    <span class="text-primary">Mã KV: </span>{{$item->ho_so->kv->ma_khu_vuc}}
+                                                </p>
+                                            </div>
+                                            <div class="col-2">
+                                                <p><span class="text-primary">Mã LĐ: </span> 1</p>
+                                            </div>
+                                        </div>
+                                        <p>
+                                            <span class="text-primary">Mã giá: </span> {{$item->ho_so->mcd->ma_muc_cap_dien}}
+                                        </p>
                                     </div>
-                                </div>
 
-                                <div class="form-group">
-                                    <label for="trang_thai">Trạng thái</label>
-                                    <select class="form-control" name="trang_thai" id="trang_thai" required>
-                                        <option value="1">{{\App\HoaDon::STATUS[1]}}</option>
-                                        <option value="2">{{\App\HoaDon::STATUS[2]}}</option>
-                                        <option value="3">{{\App\HoaDon::STATUS[3]}}</option>
-                                        <option value="4">{{\App\HoaDon::STATUS[4]}}</option>
-                                        <option value="0">{{\App\HoaDon::STATUS[0]}}</option>
-                                    </select>
-                                </div>
+                                    <table class="table table-bordered">
+                                        <thead>
+                                        <th>Bộ CS</th>
+                                        <th>CHỈ SỐ CŨ</th>
+                                        <th>CHỈ SỐ MƠI</th>
+                                        <th>HS NHÂN</th>
+                                        <th>ĐN TIÊU THỤ</th>
+                                        <th>ĐN TRỰC TIẾP</th>
+                                        <th>ĐN TRỪ PHỤ</th>
+                                        <th>ĐN THỰC TẾ</th>
+                                        <th>ĐƠN GIÁ</th>
+                                        <th>THÀNH TIỀN</th>
+                                        </thead>
+                                        <tbody>
+                                        @if($item->ho_so->mcd->loai_gia == 2)
 
+                                            @php
+
+                                                $giadien = $item->ho_so->mcd->giadien[0];
+                                                    $chi_so_cu = json_decode($item->chi_so_cu);
+                                                    $chi_so_moi = json_decode($item->chi_so_moi);
+
+                                                $dn = (object)[
+                                                    'bt' => $chi_so_moi->binh_thuong - $chi_so_cu->binh_thuong,
+                                                    'cd' => $chi_so_moi->cao_diem - $chi_so_cu->cao_diem,
+                                                    'td' => $chi_so_moi->thap_diem - $chi_so_cu->thap_diem,
+                                                ];
+
+                                                $price = (object)[
+                                                    'bt' => $dn->bt * $giadien->binh_thuong,
+                                                    'cd' => $dn->cd * $giadien->cao_diem,
+                                                    'td' => $dn->td * $giadien->thap_diem,
+                                                ];
+
+                                            @endphp
+                                            <tr>
+                                                <td>BT</td>
+                                                <td>{{$chi_so_cu->binh_thuong}}</td>
+                                                <td>{{$chi_so_moi->binh_thuong}}</td>
+                                                <td>1</td>
+                                                <td>{{$dn->bt}}</td>
+                                                <td>0</td>
+                                                <td>0</td>
+                                                <td>{{$dn->bt}}</td>
+                                                <td>{{$giadien->binh_thuong}}</td>
+                                                <td>{{_price($price->bt)}}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>CD</td>
+                                                <td>{{$chi_so_cu->cao_diem}}</td>
+                                                <td>{{$chi_so_moi->cao_diem}}</td>
+                                                <td>1</td>
+                                                <td>{{$dn->cd}}</td>
+                                                <td>0</td>
+                                                <td>0</td>
+                                                <td>{{$dn->cd}}</td>
+                                                <td>{{$giadien->cao_diem}}</td>
+                                                <td>{{_price($price->cd)}}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>TD</td>
+                                                <td>{{$chi_so_cu->thap_diem}}</td>
+                                                <td>{{$chi_so_moi->thap_diem}}</td>
+                                                <td>1</td>
+                                                <td>{{$dn->td}}</td>
+                                                <td>0</td>
+                                                <td>0</td>
+                                                <td>{{$dn->td}}</td>
+                                                <td>{{$giadien->thap_diem}}</td>
+                                                <td>{{_price($price->td)}}</td>
+                                            </tr>
+
+                                            <tr>
+                                                <td class="text-primary" colspan="7">Cộng:</td>
+                                                <td class="font-weight-bold">{{array_sum(array_values((array)$dn))}}</td>
+                                                <td></td>
+                                                <td class="font-weight-bold">{{_price(array_sum(array_values((array)$price)))}}</td>
+                                            </tr>
+
+                                            <tr>
+                                                <td class="text-primary" colspan="7">Thuế suất GTGT: 10%</td>
+                                                <td class="text-primary" colspan="2">Thuế GTGT</td>
+                                                <td class="font-weight-bold">{{_price(array_sum(array_values((array)$price))/10)}}</td>
+                                            </tr>
+
+                                            <tr>
+                                                <td class="font-weight-bold" colspan="9">Tổng cộng tiền thanh toán</td>
+                                                <td>{{_price(array_sum(array_values((array)$price)) + (array_sum(array_values((array)$price))/10))}}</td>
+                                            </tr>
+
+                                            <tr>
+                                                <td colspan="10">
+                                                    <span class="text-primary">Số tiền viết bằng chữ </span> <span
+                                                            class="font-weight-bold">{{ucfirst(convert_number_to_words(array_sum(array_values((array)$price)) + (array_sum(array_values((array)$price))/10)))}}
+                                                        đồng</span>
+                                                </td>
+                                            </tr>
+                                        @elseif($item->ho_so->mcd->loai_gia == 1)
+                                            <tr>
+                                                <td>KT</td>
+                                                <td>{{$item->chi_so_cu}}</td>
+                                                <td>{{$item->chi_so_moi}}</td>
+                                                <td>1</td>
+                                                <td>{{$item->chi_so_moi - $item->chi_so_cu}}</td>
+                                                <td>0</td>
+                                                <td>0</td>
+                                                <td>{{$item->chi_so_moi - $item->chi_so_cu}}</td>
+                                                <td></td>
+                                                <td></td>
+                                            </tr>
+
+                                            @php
+                                                $prices = _priceKwh(($item->chi_so_moi - $item->chi_so_cu), $item->ho_so->mcd->giadien);
+                                                $total = array_sum(array_column($prices, 'total'));
+                                                $percent = $total/10;
+                                            @endphp
+
+                                            @foreach($prices as $price)
+                                                @if($loop->first)
+                                                    <tr>
+                                                        <td rowspan="{{sizeof($prices)}}"></td>
+                                                        <td rowspan="{{sizeof($prices)}}"></td>
+                                                        <td rowspan="{{sizeof($prices)}}"></td>
+                                                        <td rowspan="{{sizeof($prices)}}"></td>
+                                                        <td rowspan="{{sizeof($prices)}}"></td>
+                                                        <td rowspan="{{sizeof($prices)}}"></td>
+                                                        <td rowspan="{{sizeof($prices)}}"></td>
+                                                        <td>{{$price['kwh']}}</td>
+                                                        <td>{{_price($price['price'])}}</td>
+                                                        <td>{{_price($price['total'])}}</td>
+                                                    </tr>
+                                                @else
+                                                    <tr>
+                                                        <td>{{$price['kwh']}}</td>
+                                                        <td>{{_price($price['price'])}}</td>
+                                                        <td>{{_price($price['total'])}}</td>
+                                                    </tr>
+                                                @endif
+                                            @endforeach
+
+                                            <tr>
+                                                <td class="text-primary" colspan="7">Cộng:</td>
+                                                <td class="font-weight-bold">{{$item->chi_so_moi - $item->chi_so_cu}}</td>
+                                                <td></td>
+                                                <td class="font-weight-bold">{{_price($total)}}</td>
+                                            </tr>
+
+                                            <tr>
+                                                <td class="text-primary" colspan="7">Thuế suất GTGT: 10%</td>
+                                                <td class="text-primary" colspan="2">Thuế GTGT</td>
+                                                <td class="font-weight-bold">{{_price($percent)}}</td>
+                                            </tr>
+
+                                            <tr>
+                                                <td class="font-weight-bold" colspan="9">Tổng cộng tiền thanh toán</td>
+                                                <td class="font-weight-bold">{{_price($total + $percent)}}</td>
+                                            </tr>
+
+                                            <tr>
+                                                <td colspan="10">
+                                                    <span class="text-primary">Số tiền viết bằng chữ </span> <span
+                                                            class="font-weight-bold">{{ucfirst(convert_number_to_words($total + $percent))}}
+                                                        đồng</span>
+                                                </td>
+                                            </tr>
+                                        @else
+
+                                            @php
+                                                $giadien = $item->ho_so->mcd->giadien[0];
+                                                $dn = $item->chi_so_moi - $item->chi_so_cu;
+                                                $price = $dn * $giadien->gia_dien;
+                                            @endphp
+
+                                            <tr>
+                                                <td>KT</td>
+                                                <td>{{$item->chi_so_cu}}</td>
+                                                <td>{{$item->chi_so_moi}}</td>
+                                                <td>1</td>
+                                                <td>{{$item->chi_so_moi - $item->chi_so_cu}}</td>
+                                                <td>0</td>
+                                                <td>0</td>
+                                                <td>{{$dn}}</td>
+                                                <td>{{_price($giadien->gia_dien)}}</td>
+                                                <td>{{_price($price)}}</td>
+                                            </tr>
+
+                                            <tr>
+                                                <td class="text-primary" colspan="7">Thuế suất GTGT: 10%</td>
+                                                <td class="text-primary" colspan="2">Thuế GTGT</td>
+                                                <td class="font-weight-bold">{{_price($price/10)}}</td>
+                                            </tr>
+
+                                            <tr>
+                                                <td class="font-weight-bold" colspan="9">Tổng cộng tiền thanh toán</td>
+                                                <td class="font-weight-bold">{{_price($price + ($price/10))}}</td>
+                                            </tr>
+
+                                            <tr>
+                                                <td colspan="10">
+                                                    <span class="text-primary">Số tiền viết bằng chữ </span> <span
+                                                            class="font-weight-bold">{{ucfirst(convert_number_to_words($price + ($price/10)))}}
+                                                        đồng</span>
+                                                </td>
+                                            </tr>
+                                        @endif
+
+                                        <tr>
+                                            <td colspan="10" class="text-right font-weight-bold">
+                                                <p>Ngày ký: {{$item->created_at}}</p>
+                                                <p>Người ký(Ông/Bà): Điện lực Thành Phố Vinh</p>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
-                            <button type="submit" class="btn btn-primary">Thêm</button>
-                        </div>
-                    </form>
+
+                    </div>
                 </div>
             </div>
-        </div>
+        @endforeach
     </div>
 @stop

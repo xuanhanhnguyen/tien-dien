@@ -38,15 +38,26 @@
                                     </div>
 
                                     <div class="form-group">
-                                        <label for="ma_loai_dien">Loại điện</label>
-                                        <select class="form-control" name="ma_loai_dien" id="ma_loai_dien" required>
-                                            <option value="">Chọn loại điện</option>
-                                            @foreach($ld as $item)
-                                                <option @if($dksd->ma_loai_dien === $item->ma_loai_dien) selected
-                                                        @endif value="{{$item->ma_loai_dien}}">{{$item->ma_loai_dien}}
-                                                    - {{$item->ten_loai_dien}}</option>
+                                        <label for="ma_muc_cap_dien">Loại điện/Mức cấp điện</label>
+                                        <select class="form-control" name="ma_muc_cap_dien" id="ma_muc_cap_dien"
+                                                required>
+                                            <option value="">Chọn</option>
+                                            @foreach($mcd as $item)
+                                                <option @if($dksd->ma_muc_cap_dien === $item->ma_muc_cap_dien) selected
+                                                        @endif value="{{$item->ma_muc_cap_dien}}">{{$item->loaidien->ten_loai_dien}}
+                                                    - {{$item->ten_muc_cap_dien}}</option>
                                             @endforeach
                                         </select>
+
+                                        <small id="ma_muc_cap_dien" class="form-text text-muted">
+                                            Tên loại điện - Tên mức cấp điện
+                                        </small>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="dien_ap">Điện áp</label>
+                                        <input id="dien_ap" type="text" class="form-control" value="{{$dksd->dien_ap}}"
+                                               required>
                                     </div>
 
                                     <div class="form-group">
@@ -59,6 +70,10 @@
                                                     - {{$item->ten_khu_vuc}}</option>
                                             @endforeach
                                         </select>
+
+                                        <small id="ma_muc_cap_dien" class="form-text text-muted">
+                                            Mã khu vực - Tên khu vực
+                                        </small>
                                     </div>
 
                                     <div class="form-group">

@@ -7,6 +7,7 @@ use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
+    const ROLE = ['Admin', 'Nhân viên', 'Khách hàng'];
     protected $dates = ['birthday'];
     use Notifiable;
 
@@ -16,7 +17,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'username', 'email', 'password', 'facebook_id', 'google_id', 'github_id', 'phone', 'gender', 'firstname', 'lastname', 'email', 'role'
+        'username', 'email', 'password', 'address', 'phone', 'gender', 'firstname', 'lastname', 'email', 'role'
     ];
 
     /**
@@ -48,12 +49,17 @@ class User extends Authenticatable
         return ($this->role == 'Nhân Viên');
     }
 
+    public function isCustomer()
+    {
+        return ($this->role == User::ROLE[2]);
+    }
+
     public static function login($request)
     {
         $remember = $request->remember;
-        $email = $request->email;
+        $username = $request->username;
         $password = $request->password;
-        return (\Auth::attempt(['email' => $email, 'password' => $password], $remember));
+        return (\Auth::attempt(['username' => $username, 'password' => $password], $remember));
     }
 
     public function loaidien()
@@ -72,5 +78,10 @@ class User extends Authenticatable
     public function dienke()
     {
         return $this->hasOne('App\DienKe', 'ma_khach_hang');
+    }
+
+    public function use()
+    {
+        return $this->hasMany(DKSDDien::class, 'ma_khach_hang', 'id');
     }
 }

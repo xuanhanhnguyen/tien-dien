@@ -46,11 +46,20 @@
                                     <td>{{$user->email}}</td>
                                     <td>{{$user->role}}</td>
                                     <td>{{$user->created_at}}</td>
-                                    <td><a href="{{route('users.edit',$user->id)}}" class="btn btn-default btn-sm"><i
-                                                    class="icon-fa icon-fa-search"></i> Hiển thị</a>
-                                        <a href="{{route('users.destroy',$user->id)}}" class="btn btn-default btn-sm"
-                                           data-token="{{csrf_token()}}" data-delete data-confirmation="notie"> <i
-                                                    class="icon-fa icon-fa-trash"></i> Xóa</a></td>
+                                    <td>
+                                        <a href="{{route('users.edit',$user->id)}}" class="btn btn-default btn-sm"><i
+                                                    class="icon-fa icon-fa-search"></i> Chỉnh sửa</a>
+                                        <form id="delete-{{$user->id}}" class="mt-1"
+                                              action="{{route('users.destroy',$user->id)}}"
+                                              method="post">
+                                            @csrf
+                                            @method('delete')
+                                            <a href="#"
+                                               onclick="confirm('Bạn chọn xóa?') && $('#delete-{{$user->id}}').submit()"
+                                               class="btn btn-default btn-sm">
+                                                <i class="icon-fa icon-fa-trash"></i> Xóa</a>
+                                        </form>
+                                    </td>
                                 </tr>
                             @endforeach
                             <tbody>

@@ -15,7 +15,6 @@
             <div class="page-actions">
                 <a href="#" class="btn btn-primary" data-toggle="modal" data-target=".ls-example-modal-lg"><i
                             class="icon-fa icon-fa-plus"></i>Thêm mới</a>
-                <button class="btn btn-danger"><i class="icon-fa icon-fa-trash"></i> Xóa</button>
             </div>
         </div>
 
@@ -62,16 +61,17 @@
                                     <td>{{$item->ma_khu_vuc}}</td>
                                     <td>{{$item->ten_khu_vuc}}</td>
                                     <td>{{$item->don_vi}}</td>
-                                    <td class="d-flex"><a href="{{route('khu-vuc.edit',$item->ma_khu_vuc)}}"
+                                    <td class="d-flex">
+                                        <a href="{{route('khu-vuc.edit',$item->ma_khu_vuc)}}"
                                                           class="btn btn-default btn-sm"><i
                                                     class="icon-fa icon-fa-edit"></i> Chỉnh sửa</a>
-                                        <form id="delete-khuvuc" class="ml-1"
+                                        <form id="delete-{{$item->ma_khu_vuc}}" class="ml-1"
                                               action="{{route('khu-vuc.destroy',$item->ma_khu_vuc)}}"
                                               method="post">
                                             @csrf
                                             @method('delete')
                                             <a href="#"
-                                               onclick="confirm('Bạn chọn xóa?') && $('#delete-khuvuc').submit()"
+                                               onclick="confirm('Bạn chọn xóa?') && $('#delete-{{$item->ma_khu_vuc}}').submit()"
                                                class="btn btn-default btn-sm">
                                                 <i class="icon-fa icon-fa-trash"></i> Xóa</a>
                                         </form>

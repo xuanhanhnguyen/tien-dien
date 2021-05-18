@@ -1,19 +1,28 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use App\LoaiDien;
 use App\GiaDien;
+use App\MucCapDien;
 use Illuminate\Http\Request;
 
 class GiaDienController extends Controller
 {
     public function index()
     {
-        $loaidien = LoaiDien::with('giadien')->get();
-        $giadien = GiaDien::with('loaidien')->get();
-        return view('admin.giadien.index')->with(['loaidien' => $loaidien, 'giadien' => $giadien]);
+        try {
+            $loaidien = LoaiDien::all();
+            $ld = \request()->ld ?? $loaidien[0]['ma_loai_dien'];
+            $data = MucCapDien::with('giadien', 'loaidien')->where('ma_loai_dien', $ld)->get();
+
+            return view('admin.giadien.index', compact('data', 'loaidien', 'ld'));
+        } catch (\Exception $e) {
+            flash('error')->error('Vui lòng tạo loại điện');
+            return redirect()->route('loaidien.index');
+        }
     }
-    
+
     public function show($id)
     {
         $giadien = GiaDien::where('ma_gia_dien', $id)->firstOrFail();
@@ -23,43 +32,69 @@ class GiaDienController extends Controller
 
     public function edit($id)
     {
-        $loaidien = LoaiDien::get();
-        $giadien = GiaDien::where('ma_gia_dien', $id)->firstOrFail();
+        $mcd = MucCapDien::all();
+        $giadien = GiaDien::find($id);
 
-        return view('admin.giadien.edit')->with(['loaidien' => $loaidien, 'giadien' => $giadien]);
+        $id = \request()->mcd ?? $mcd[0]['ma_muc_cap_dien'];
+        $_mcd = MucCapDien::find($id);
+
+        return view('admin.giadien.edit', compact('mcd', 'id', '_mcd', 'giadien'));
     }
 
     public function update(Request $request, $id)
     {
-        $giadien = GiaDien::where('ma_gia_dien', $id)->firstOrFail();
-        $giadien->tu_so = $request['tuso'];
-        $giadien->den_so = $request['denso'];
-        $giadien->gia_dien = $request['giadien'];
-        $giadien->ma_loai_dien = (int)$request['maloaidien'];
-        $giadien->save();
+        try {
 
-        return redirect()->route('giadien.index');
+            GiaDien::where('ma_gia_dien', $id)->firstOrFail()->update($request->all());
+
+            flash('message')->success('Cập nhật thành công.');
+
+            return redirect()->route('giadien.index');
+        } catch (\Exception $e) {
+            flash('error')->error('Cập nhật thất bại, vui lòng kiểm tra lại.');
+            return redirect()->route('giadien.index');
+        }
+    }
+
+    public function create()
+    {
+        $mcd = MucCapDien::all();
+        $id = \request()->mcd ?? $mcd[0]['ma_muc_cap_dien'];
+        $_mcd = MucCapDien::find($id);
+        return view('admin.giadien.add', compact('mcd', 'id', '_mcd'));
     }
 
     public function store(Request $request)
     {
 
-        $giadien = new GiaDien();
+        try {
 
-        $giadien->tu_so = $request['tuso'];
-        $giadien->den_so = $request['denso'];
-        $giadien->gia_dien = $request['giadien'];
-        $giadien->ma_loai_dien = (int)$request['maloaidien'];
-        $giadien->save();
-        return redirect()->route('giadien.index');
+            GiaDien::create($request->all());
+
+
+            flash('message')->success('Thêm mới thành công.');
+
+            return redirect()->route('giadien.index');
+        } catch (\Exception $e) {
+            flash('error')->error('Thêm mới thất bại, vui lòng kiểm tra lại.');
+            return redirect()->route('giadien.index');
+        }
     }
 
     public function destroy($id)
     {
-        $user = GiaDien::where('ma_gia_dien', $id)->firstOrFail();
-        $user->delete();
-        // flash('User Deleted')->success();
+        try {
 
-        return redirect()->back();
+            $user = GiaDien::where('ma_gia_dien', $id)->firstOrFail();
+            $user->delete();
+
+
+            flash('message')->success('Xóa thành công.');
+
+            return redirect()->back();
+        } catch (\Exception $e) {
+            flash('error')->error('Xóa thất bại, vui lòng kiểm tra lại.');
+            return redirect()->back();
+        }
     }
 }

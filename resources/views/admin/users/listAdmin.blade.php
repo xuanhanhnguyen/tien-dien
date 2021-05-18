@@ -56,13 +56,20 @@
                                     <td>{{$user->gender == 0 ? 'Nam' : 'Nữ'}}</td>
                                     <td>{{$user->created_at}}</td>
                                     <td>
-                                        <a href="{{route('users.hoadon',$user->id)}}" class="btn btn-default btn-sm"><i
+                                        <a href="/admin/hoa-don?id={{$user->id}}" class="btn btn-default btn-sm"><i
                                                     class="icon-fa icon-fa-list"></i>Hóa đơn</a>
                                         <a href="{{route('users.edit',$user->id)}}" class="btn btn-default btn-sm"><i
                                                     class="icon-fa icon-fa-edit"></i> Chỉnh sửa</a>
-                                        <a data-toggle='modal' data-target='#confirm{{$user->id}}'
-                                           class="btn btn-default btn-sm" data-token="{{csrf_token()}}" data-delete
-                                           data-confirmation="notie"> <i class="icon-fa icon-fa-trash"></i> Xóa</a>
+                                        <form id="delete-{{$user->id}}" class="mt-1"
+                                              action="{{route('users.destroy',$user->id)}}"
+                                              method="post">
+                                            @csrf
+                                            @method('delete')
+                                            <a href="#"
+                                               onclick="confirm('Bạn chọn xóa?') && $('#delete-{{$user->id}}').submit()"
+                                               class="btn btn-default btn-sm">
+                                                <i class="icon-fa icon-fa-trash"></i> Xóa</a>
+                                        </form>
                                     </td>
                                 </tr>
                                 <div class='modal fade' id="confirm{{$user->id}}">

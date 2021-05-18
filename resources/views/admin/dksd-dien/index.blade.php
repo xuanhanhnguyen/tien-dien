@@ -41,6 +41,23 @@
         @endif
 
         <div class="row">
+            <div class="col-md-12">
+                <form id="_khuvuc" action="">
+                    <div class="form-group d-flex align-items-center">
+                        <label class="m-0" for="kv">Khu vực:</label>
+                        <select onchange="$('#_khuvuc').submit()" class="ml-1 form-control w-50" name="kv" id="kv">
+                            @foreach($kv as $item)
+                                <option @if($item->ma_khu_vuc == $id) selected
+                                        @endif value="{{$item->ma_khu_vuc}}">{{$item->ten_khu_vuc}}({{$item->don_vi}})
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="row">
             <div class="col-sm-12">
                 <div class="card">
                     <div class="card-header">
@@ -56,7 +73,8 @@
                                 <th>Tài khoản</th>
                                 <th>Tên khách hàng</th>
                                 <th>Loại diện</th>
-                                <th>Khu vực</th>
+                                <th>Mức cấp điện</th>
+                                <th>Điện áp</th>
                                 <th>HS Nhân</th>
                                 <th>Trạng thái</th>
                                 <th>Ngày tạo</th>
@@ -69,15 +87,16 @@
                                     <td>{{$item->kh->id}}</td>
                                     <td>{{$item->kh->username}}</td>
                                     <td>{{$item->kh->name}}</td>
-                                    <td>{{$item->loai_dien->ten_loai_dien}}</td>
-                                    <td>{{$item->kv->ten_khu_vuc}} ({{$item->kv->don_vi}})</td>
+                                    <td>{{$item->mcd->loaidien->ten_loai_dien}}</td>
+                                    <td>{{$item->mcd->ten_muc_cap_dien}}</td>
+                                    <td>{{$item->mcd->dien_ap}}</td>
                                     <td>{{$item->hs_nhan}}</td>
                                     <td>{{\App\DKSDDien::STATUS[$item->trang_thai]}}</td>
                                     <td>{{$item->created_at}}</td>
-                                    <td class="d-flex"><a href="{{route('dksd-dien.edit',$item->ma_dksd_dien)}}"
-                                                          class="btn btn-default btn-sm"><i
+                                    <td><a href="{{route('dksd-dien.edit',$item->ma_dksd_dien)}}"
+                                           class="btn btn-default btn-sm"><i
                                                     class="icon-fa icon-fa-edit"></i> Chỉnh sửa</a>
-                                        <form id="form-delete" class="ml-1"
+                                        <form id="form-delete"
                                               action="{{route('dksd-dien.destroy',$item->ma_dksd_dien)}}"
                                               method="post">
                                             @csrf
@@ -128,14 +147,23 @@
                                 </div>
 
                                 <div class="form-group">
-                                    <label for="ma_loai_dien">Loại điện</label>
-                                    <select class="form-control" name="ma_loai_dien" id="ma_loai_dien" required>
-                                        <option value="">Chọn loại điện</option>
-                                        @foreach($ld as $item)
-                                            <option value="{{$item->ma_loai_dien}}">{{$item->ma_loai_dien}}
-                                                - {{$item->ten_loai_dien}}</option>
+                                    <label for="ma_muc_cap_dien">Loại điện/Mức cấp điện</label>
+                                    <select class="form-control" name="ma_muc_cap_dien" id="ma_muc_cap_dien" required>
+                                        <option value="">Chọn</option>
+                                        @foreach($mcd as $item)
+                                            <option value="{{$item->ma_muc_cap_dien}}">{{$item->loaidien->ten_loai_dien}}
+                                                - {{$item->ten_muc_cap_dien}}</option>
                                         @endforeach
                                     </select>
+
+                                    <small id="ma_muc_cap_dien" class="form-text text-muted">
+                                        Tên loại điện - Tên mức cấp điện
+                                    </small>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="dien_ap">Điện áp</label>
+                                    <input id="dien_ap" type="text" class="form-control" value="0" required>
                                 </div>
 
                                 <div class="form-group">
@@ -147,6 +175,9 @@
                                                 - {{$item->ten_khu_vuc}}</option>
                                         @endforeach
                                     </select>
+                                    <small id="ma_muc_cap_dien" class="form-text text-muted">
+                                        Mã khu vực - Tên khu vực
+                                    </small>
                                 </div>
 
                                 <div class="form-group">

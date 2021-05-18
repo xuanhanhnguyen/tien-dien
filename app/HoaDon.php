@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class HoaDon extends Model
 {
 
-    const STATUS = ['Hủy', 'Mới', 'Đã nhập chỉ số', 'Đã in hóa đơn', 'Đã nạp tiền'];
+    const STATUS = ['Hủy', 'Chưa nhập chỉ số', 'Đã nhập chỉ số', 'Đã in hóa đơn', 'Đã nạp tiền'];
 
     protected $table = 'hoa_don';
 
@@ -20,5 +20,10 @@ class HoaDon extends Model
     public function ho_so()
     {
         return $this->belongsTo(DKSDDien::class, 'ma_dksd_dien', 'ma_dksd_dien');
+    }
+
+    public function isCustomer()
+    {
+        return $this->ho_so()->where('ma_khach_hang', \request()->id ?? \Auth::id());
     }
 }

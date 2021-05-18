@@ -6,181 +6,105 @@
 
 @section('content')
     <div class="main-content page-profile">
-        <div class="page-header">
-            <h3 class="page-title">User Profile</h3>
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="{{route('admin.dashboard')}}">Home</a></li>
-                <li class="breadcrumb-item"><a href="{{route('users.index')}}">Users</a></li>
-                <li class="breadcrumb-item active">Jane Doe</li>
-            </ol>
-        </div>
         <div class="row">
             <div class="col-sm-12">
                 <div class="card">
                     <div class="card-body">
-                        <div class="tabs tabs-default">
-                            <ul class="nav nav-tabs" role="tablist">
-                                <li class="nav-item">
-                                    <a class="nav-link active" data-toggle="tab" href="#profile" role="tab">Profile</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" data-toggle="tab" href="#messages" role="tab">Messages</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" data-toggle="tab" href="#friends" role="tab">Friends</a>
-                                </li>
-                            </ul>
-                            <!-- Tab panes -->
-                            <div class="tab-content">
-                                <div class="tab-pane active" id="profile" role="tabpanel">
-                                    <div class="row">
-                                        <div class="col-sm-3">
-                                            <div class="avatar-container">
-                                                <img src="/assets/admin/img/avatars/avatar-lg.png" alt="Admin Avatar" class="img-fluid">
-                                            </div>
-                                        </div>
-                                        <div class="col-sm-9">
-                                            <h4>Jane Doe</h4>
-                                            <p class="detail-row"><i class="icon-fa icon-fa-map-marker"></i> New York , United States</p>
-                                            <p class="detail-row"><i class="icon-fa icon-fa-birthday-cake"></i> September 7, 1991</p>
-                                            <p class="detail-row"><i class="icon-fa icon-fa-wrench"></i> UI Designer / Pro Model</p>
-                                        </div>
+                        <form action="{{route('users.update',$user->id)}}" method="POST">
+                            @method('PUT')
+                            <input type="hidden" name="role" value="{{$user->role}}">
+                            <div class="modal-body">
+                                <div class="card-body">
+                                    <div class="form-group">
+                                        <label for="inputUserName">Tên đăng nhập</label>
+                                        <input type="text" class="form-control" id="inputUserName" disabled
+                                               placeholder="Tên đăng nhập" value="{{$user->username}}" name="username">
                                     </div>
-                                    <div class="row mt-4">
-                                        <div class="col-sm-12">
-                                            <h3 class="section-semi-title">Recent Activity</h3>
-                                            <ul class="media-list activity-list">
-                                                <li class="media">
-                                                    <div class="media-left">
-                                                        <a href="#">
-                                                            <img class="media-object img-thumbnail" src="/assets/admin/img/avatars/avatar1.png" alt="Generic placeholder image">
-                                                        </a>
-                                                    </div>
-                                                    <div class="media-body">
-                                                        <h4 class="media-heading">Shane White <span>just posted an update</span></h4>
-                                                        <small>Today at 3.50pm</small>
-                                                        <p class="mt-2">"Hello Everyone! Its been a fun morning!"</p>
-                                                    </div>
-                                                </li>
-                                                <li class="media">
-                                                    <div class="media-left">
-                                                        <a href="#">
-                                                            <img class="media-object img-thumbnail" src="/assets/admin/img/avatars/avatar2.png" alt="Generic placeholder image">
-                                                        </a>
-                                                    </div>
-                                                    <div class="media-body">
-                                                        <h4 class="media-heading">Adam David <span>just became friends with</span> Shane White </h4>
-                                                        <small>Yesterday at 9pm</small>
-                                                    </div>
-                                                </li>
-                                            </ul>
 
+                                    <div class="form-group d-flex">
+                                        <input onchange="$('#change-password').toggle()" id="check-password"
+                                               type="checkbox"
+                                               name="_password"
+                                               class="mr-3 mt-1 checkbox">
+                                        <label for="check-password">Thay đổi mật khẩu</label>
+                                    </div>
+
+                                    <div class="form-group password" id="change-password" style="display: none">
+                                        <label for="password">Mật khẩu</label>
+                                        <input type="password" class="form-control" name="password"
+                                               id="password" placeholder="Password">
+                                    </div>
+
+                                    <div class="form-row">
+                                        <div class="form-group col-md-6">
+                                            <label for="inputFirstName">Họ</label>
+                                            <input type="text" class="form-control" id="inputFirstName"
+                                                   value="{{$user->firstname}}" name="firstname"
+                                                   placeholder="Nhập họ" required>
+                                        </div>
+                                        <div class="form-group col-md-6">
+                                            <label for="inputLastName">Tên</label>
+                                            <input type="text" class="form-control" id="inputLastName"
+                                                   value="{{$user->lastname}}" name="lastname"
+                                                   placeholder="Nhập tên" required>
                                         </div>
                                     </div>
-                                </div>
-                                <div class="tab-pane" id="messages" role="tabpanel">
-                                    <ul class="media-list activity-list">
-                                        <li class="media">
-                                            <div class="media-left">
-                                                <a href="#">
-                                                    <img class="media-object img-thumbnail" src="/assets/admin/img/avatars/avatar1.png" alt="Generic placeholder image">
-                                                </a>
+                                    <div class="form-group">
+                                        <label for="exampleInputEmail">Email</label>
+                                        <input type="text" class="form-control" id="exampleInputEmail" name="email"
+                                               aria-describedby="emailHelp" value="{{$user->email}}"
+                                               placeholder="Nhập email">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="exampleInputPhone">Số điện thoại</label>
+                                        <input type="text" class="form-control" id="exampleInputPhone" name="phone"
+                                               aria-describedby="phoneHelp" value="{{$user->phone}}"
+                                               placeholder="Nhập sô điện thoại" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Giới tính</label>
+
+                                        <div>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input"
+                                                       @if($user->gender == 0) checked='checked' @endif type="radio"
+                                                       name="gender" value="0"
+                                                       id="checkMale">
+                                                <label class="form-check-label" for="checkMale">Nam</label>
                                             </div>
-                                            <div class="media-body">
-                                                <h4 class="media-heading">Adam David <span>sent a message</span></h4>
-                                                <small>Today at 3.50pm</small>
-                                                <p class="mt-2">"When you have children, you always have family. They will always be your priority, your responsibility.
-                                                    And a man, a man provides. And he does it even when he's not appreciated or respected or even loved. He simply bears up and he does it. Because he's a man."</p>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input"
+                                                       @if($user->gender == 1) checked='checked' @endif type="radio"
+                                                       name="gender" value="1"
+                                                       id="checkFemale">
+                                                <label class="form-check-label" for="checkFemale">Nữ</label>
                                             </div>
-                                        </li>
-                                        <li class="media">
-                                            <div class="media-left">
-                                                <a href="#">
-                                                    <img class="media-object img-thumbnail" src="/assets/admin/img/avatars/avatar2.png" alt="Generic placeholder image">
-                                                </a>
+                                        </div>
+
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Ngày sinh</label>
+                                        <div class="input-group">
+                                            <input type="text" class="form-control ls-datepicker"
+                                                   value="{!! !empty($user->birthday) ?  $user->birthday->format('m/d/Y'): '' !!}"
+                                                   name="birthday">
+                                            <div class="input-group-append">
+                                                <span class="input-group-text">
+                                                        <i class="icon-fa icon-fa-calendar"></i>
+                                                </span>
                                             </div>
-                                            <div class="media-body">
-                                                <h4 class="media-heading">Shane White <span>sent a message</span></h4>
-                                                <small>Yesterday at 9pm</small>
-                                                <p class="mt-2">
-                                                    “Hey! How you doin?”
-                                                </p>
-                                            </div>
-                                        </li>
-                                    </ul>
-                                </div>
-                                <div class="tab-pane" id="friends" role="tabpanel">
-                                    <ul class="media-list friends-list">
-                                        <li class="media">
-                                            <div class="media-left">
-                                                <a href="#">
-                                                    <img class="media-object" src="/assets/admin/img/avatars/avatar1.png" alt="Generic placeholder image">
-                                                </a>
-                                            </div>
-                                            <div class="media-body">
-                                                <h4 class="media-heading">Shane White</h4>
-                                                <small>2000 friends</small>
-                                            </div>
-                                        </li>
-                                        <li class="media">
-                                            <div class="media-left">
-                                                <a href="#">
-                                                    <img class="media-object" src="/assets/admin/img/avatars/avatar2.png" alt="Generic placeholder image">
-                                                </a>
-                                            </div>
-                                            <div class="media-body">
-                                                <h4 class="media-heading">Adam David</h4>
-                                                <small>200 friends</small>
-                                            </div>
-                                        </li>
-                                        <li class="media">
-                                            <div class="media-left">
-                                                <a href="#">
-                                                    <img class="media-object" src="/assets/admin/img/avatars/avatar1.png" alt="Generic placeholder image">
-                                                </a>
-                                            </div>
-                                            <div class="media-body">
-                                                <h4 class="media-heading">Shane White</h4>
-                                                <small>2000 friends</small>
-                                            </div>
-                                        </li>
-                                        <li class="media">
-                                            <div class="media-left">
-                                                <a href="#">
-                                                    <img class="media-object" src="/assets/admin/img/avatars/avatar2.png" alt="Generic placeholder image">
-                                                </a>
-                                            </div>
-                                            <div class="media-body">
-                                                <h4 class="media-heading">Adam David</h4>
-                                                <small>200 friends</small>
-                                            </div>
-                                        </li>
-                                        <li class="media">
-                                            <div class="media-left">
-                                                <a href="#">
-                                                    <img class="media-object" src="/assets/admin/img/avatars/avatar1.png" alt="Generic placeholder image">
-                                                </a>
-                                            </div>
-                                            <div class="media-body">
-                                                <h4 class="media-heading">Shane White</h4>
-                                                <small>2000 friends</small>
-                                            </div>
-                                        </li>
-                                        <li class="media">
-                                            <div class="media-left">
-                                                <a href="#">
-                                                    <img class="media-object" src="/assets/admin/img/avatars/avatar2.png" alt="Generic placeholder image">
-                                                </a>
-                                            </div>
-                                            <div class="media-body">
-                                                <h4 class="media-heading">Adam David</h4>
-                                                <small>200 friends</small>
-                                            </div>
-                                        </li>
-                                    </ul>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                            @csrf
+                            <div class="modal-footer">
+                                <a href="{{route('users.index')}}">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+                                </a>
+                                <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>

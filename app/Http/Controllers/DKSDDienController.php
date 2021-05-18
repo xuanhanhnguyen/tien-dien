@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\DKSDDien;
 use App\KhuVuc;
 use App\LoaiDien;
+use App\MucCapDien;
 use App\User;
 use Illuminate\Http\Request;
 
@@ -13,21 +14,23 @@ class DKSDDienController extends Controller
     public function index()
     {
         $kv = KhuVuc::all();
-        $ld = LoaiDien::all();
+        $mcd = MucCapDien::with('loaidien')->get();
         $kh = User::where('role', 'Khách hàng')->get();
 
-        $dksd = DKSDDien::with('kv', 'loai_dien', 'kh')->get();
-        return view('admin.dksd-dien.index', compact('dksd', 'kv', 'ld', 'kh'));
+        $id = \request()->id ?? $kv[0]['ma_khu_vuc'];
+
+        $dksd = DKSDDien::with('kv', 'mcd', 'mcd.loaidien', 'kh')->where('ma_khu_vuc', $id)->get();
+        return view('admin.dksd-dien.index', compact('dksd', 'kv', 'mcd', 'kh', 'id'));
     }
 
     public function edit($id)
     {
         $kv = KhuVuc::all();
-        $ld = LoaiDien::all();
+        $mcd = MucCapDien::with('loaidien')->get();
         $kh = User::where('role', 'Khách hàng')->get();
 
         $dksd = DKSDDien::findOrFail($id);
-        return view('admin.dksd-dien.edit', compact('dksd', 'kv', 'ld', 'kh'));
+        return view('admin.dksd-dien.edit', compact('dksd', 'kv', 'mcd', 'kh'));
     }
 
     public function store(Request $request)
