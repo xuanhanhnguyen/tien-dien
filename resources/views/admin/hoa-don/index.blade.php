@@ -428,6 +428,10 @@
                                         </tr>
                                         </tbody>
                                     </table>
+                                    
+                                    <div class="text-center">
+                                        <a href="/admin/hoa-don/{{$item->ma_hoa_don}}" target="_blank"><button class="btn-info btn">In hóa đơn</button></a>
+                                    </div>
                                 </div>
                             </div>
                         </div>

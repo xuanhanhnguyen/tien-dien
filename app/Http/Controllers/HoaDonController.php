@@ -7,6 +7,7 @@ use App\HoaDon;
 use App\KhuVuc;
 use App\LoaiDien;
 use App\User;
+use Barryvdh\DomPDF\Facade as PDF;
 use Illuminate\Http\Request;
 
 class HoaDonController extends Controller
@@ -29,6 +30,15 @@ class HoaDonController extends Controller
         }
 
         return view('admin.hoa-don.index', compact('hd', 'hs'));
+    }
+
+    public function show($id)
+    {
+        $hd = HoaDon::with('ho_so', 'ho_so.kh', 'ho_so.kv', 'ho_so.mcd', 'ho_so.mcd.giadien')->find($id);
+
+//        $pdf = PDF::loadView('admin.hoa-don.print', compact('hd'));
+//        return $pdf->download('invoice.pdf');
+        return view('admin.hoa-don.print', compact('hd'));
     }
 
     public function create()
