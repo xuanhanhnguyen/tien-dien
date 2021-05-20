@@ -63,7 +63,7 @@
                                         </div>
                                     @endif
 
-                                    @if($_mcd->loai_gia == 3 || $_mcd->loai_gia == 2)
+                                    @if($_mcd->loai_gia == 3)
                                         <div class="form-group">
                                             <label for="tu_so">Từ kV</label>
                                             <input type="number" value="{{$giadien->tu_so}}" class="form-control"

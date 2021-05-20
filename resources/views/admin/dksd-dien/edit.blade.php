@@ -56,7 +56,8 @@
 
                                     <div class="form-group">
                                         <label for="dien_ap">Điện áp</label>
-                                        <input id="dien_ap" type="text" class="form-control" value="{{$dksd->dien_ap}}"
+                                        <input id="dien_ap" type="text" class="form-control"
+                                               value="{{$dksd->dien_ap ?? 0}}"
                                                required>
                                     </div>
 

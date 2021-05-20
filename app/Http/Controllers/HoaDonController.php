@@ -4,32 +4,34 @@ namespace App\Http\Controllers;
 
 use App\DKSDDien;
 use App\HoaDon;
-use App\KhuVuc;
-use App\LoaiDien;
 use App\User;
-use Barryvdh\DomPDF\Facade as PDF;
 use Illuminate\Http\Request;
 
 class HoaDonController extends Controller
 {
     public function index()
     {
+        $month = \request()->thang ?? $month = date('m');
+        $year = \request()->nam ?? date('Y');
+
         if (\Auth::user()->role == User::ROLE[0]) {
             if (\request()->id) {
-                $hd = HoaDon::has('isCustomer')->with('ho_so', 'ho_so.kh', 'ho_so.kv', 'ho_so.mcd', 'ho_so.mcd.giadien')->get();
+                $hd = HoaDon::has('isCustomer')->with('ho_so', 'ho_so.kh', 'ho_so.kv', 'ho_so.mcd', 'ho_so.mcd.giadien')->whereDate($month, $year)->get();
             } else {
-                $hd = HoaDon::with('ho_so', 'ho_so.kh', 'ho_so.kv', 'ho_so.mcd', 'ho_so.mcd.giadien')->get();
+                $hd = HoaDon::with('ho_so', 'ho_so.kh', 'ho_so.kv', 'ho_so.mcd', 'ho_so.mcd.giadien')->whereDate($month, $year)->get();
             }
             $hs = DKSDDien::with('kh')->get();
         } else if (\Auth::user()->role == User::ROLE[1]) {
-            $hd = HoaDon::with('ho_so', 'ho_so.kh', 'ho_so.kv', 'ho_so.mcd')->whereIn('trang_thai', [1, 2])->get();
+            $hd = HoaDon::with('ho_so', 'ho_so.kh', 'ho_so.kv', 'ho_so.mcd')->whereIn('trang_thai', [1, 2])->whereDate($month, $year)->get();
             $hs = DKSDDien::with('kh')->get();
         } else {
-            $hd = HoaDon::has('isCustomer')->with('ho_so', 'ho_so.kh', 'ho_so.kv', 'ho_so.mcd')->get();
+            $hd = HoaDon::has('isCustomer')->with('ho_so', 'ho_so.kh', 'ho_so.kv', 'ho_so.mcd')->whereDate($month, $year)->get();
             $hs = DKSDDien::with('kh')->get();
         }
 
-        return view('admin.hoa-don.index', compact('hd', 'hs'));
+        $checkAuto = HoaDon::with([])->whereDate($month, $year)->where('auto', 1)->count();
+
+        return view('admin.hoa-don.index', compact('hd', 'hs', 'checkAuto'));
     }
 
     public function show($id)
@@ -109,6 +111,114 @@ class HoaDonController extends Controller
             return redirect()->route('hoa-don.index')->with('message', 'Xóa thành công!');
         } catch (\Exception $e) {
             return redirect()->route('hoa-don.index')->with('error', 'Xóa thất bại, vui lòng thử lại!');
+        }
+    }
+
+    public function createAuto(Request $request)
+    {
+        try {
+
+            if ($request->has('_update')) {
+                $hs = DKSDDien::with('mcd')->where('trang_thai', 1)->get();
+            } else {
+                $hs = DKSDDien::doesntHave('existHD')->with('mcd')->where('trang_thai', 1)->get();
+            }
+
+            foreach ($hs as $item) {
+
+                $hd = HoaDon::where('ma_dksd_dien', $item->ma_dksd_dien)->latest()->first();
+
+                if ($hd) {
+                    $_chi_so_cu = $hd->chi_so_moi;
+                }
+
+                $data = collect($request->all())->merge([
+                    'ma_dksd_dien' => $item->ma_dksd_dien,
+                    'tu_ngay' => $request->tu_ngay . '/' . ($request->thang - 1) . '/' . $request->nam,
+                    'den_ngay' => $request->den_ngay . '/' . ($request->thang) . '/' . $request->nam,
+                    'chi_so_cu' => $_chi_so_cu ?? ($item->mcd->loai_gia == 2 ? '{"binh_thuong":"0","thap_diem":"0","cao_diem":"0"}' : 0),
+                    'chi_so_moi' => $item->mcd->loai_gia == 2 ? '{"binh_thuong":"0","thap_diem":"0","cao_diem":"0"}' : 0,
+                    'auto' => 1
+                ])->toArray();
+
+                HoaDon::updateOrCreate(
+                    [
+                        'ma_dksd_dien' => $item->ma_dksd_dien,
+                        'thang' => $request->thang,
+                        'nam' => $request->nam],
+                    $data
+                );
+            }
+
+            flash('message')->success('Thêm thành công.');
+
+            return redirect()->back();
+        } catch (\Exception $e) {
+            flash('error')->error('Thêm thất bại, vui lòng kiểm tra lại.');
+            return redirect()->back();
+        }
+    }
+
+    public function updateAuto(Request $request)
+    {
+        try {
+
+            if ($request->has('_update')) {
+                $_hs = DKSDDien::doesntHave('existHD')->with('mcd')->where('trang_thai', 1)->get();
+            }
+
+            $hs = DKSDDien::has('existHD')->with('mcd')->where('trang_thai', 1)->get();
+
+            foreach ($hs as $item) {
+
+                $data = collect($request->all())->merge([
+                    'tu_ngay' => $request->tu_ngay . '/' . ($request->thang - 1) . '/' . $request->nam,
+                    'den_ngay' => $request->den_ngay . '/' . ($request->thang) . '/' . $request->nam,
+                ])->toArray();
+
+                HoaDon::updateOrCreate(
+                    [
+                        'ma_dksd_dien' => $item->ma_dksd_dien,
+                        'thang' => $request->thang,
+                        'nam' => $request->nam],
+                    $data
+                );
+            }
+
+            if (isset($_hs)) {
+                foreach ($_hs as $item) {
+
+                    $hd = HoaDon::where('ma_dksd_dien', $item->ma_dksd_dien)->latest()->first();
+
+                    if ($hd) {
+                        $_chi_so_cu = $hd->chi_so_moi;
+                    }
+
+                    $data = collect($request->all())->merge([
+                        'ma_dksd_dien' => $item->ma_dksd_dien,
+                        'tu_ngay' => $request->tu_ngay . '/' . ($request->thang - 1) . '/' . $request->nam,
+                        'den_ngay' => $request->den_ngay . '/' . ($request->thang) . '/' . $request->nam,
+                        'chi_so_cu' => $_chi_so_cu ?? ($item->mcd->loai_gia == 2 ? '{"binh_thuong":"0","thap_diem":"0","cao_diem":"0"}' : 0),
+                        'chi_so_moi' => $item->mcd->loai_gia == 2 ? '{"binh_thuong":"0","thap_diem":"0","cao_diem":"0"}' : 0,
+                        'auto' => 1
+                    ])->toArray();
+
+                    HoaDon::updateOrCreate(
+                        [
+                            'ma_dksd_dien' => $item->ma_dksd_dien,
+                            'thang' => $request->thang,
+                            'nam' => $request->nam],
+                        $data
+                    );
+                }
+            }
+
+            flash('message')->success('Cập nhật thành công.');
+
+            return redirect()->back();
+        } catch (\Exception $e) {
+            flash('error')->error('Cập nhật thất bại, vui lòng kiểm tra lại.');
+            return redirect()->back();
         }
     }
 }

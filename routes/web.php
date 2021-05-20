@@ -152,6 +152,9 @@ Route::group(['prefix' => 'admin', 'middleware' => 'auth'], function () {
     Route::resource('dksd-dien', 'DKSDDienController');
     Route::resource('hoa-don', 'HoaDonController');
     Route::get('dien-ke', 'HoaDonController@index');
+    Route::post('hoa-dơn/create-auto', 'HoaDonController@createAuto')->name('hoa-don.create.auto');
+    Route::post('hoa-dơn/update-auto', 'HoaDonController@updateAuto')->name('hoa-don.update.auto');
+    Route::get('thong-ke', 'ThongKeController@index')->name('thong-ke.index');
     // Settings
     //----------------------------------
 });

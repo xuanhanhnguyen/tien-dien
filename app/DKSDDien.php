@@ -35,6 +35,14 @@ class DKSDDien extends Model
         return $this->hasMany(HoaDon::class, 'ma_dksd_dien', 'ma_dksd_dien');
     }
 
+    public function existHD()
+    {
+        return $this->hd()->where([
+            ['thang', \request()->thang],
+            ['nam', \request()->nam]
+        ]);
+    }
+
     public function scopeWhereKh($query, $id)
     {
         return $query->where('ma_khach_hang', $id);

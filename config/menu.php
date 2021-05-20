@@ -56,7 +56,7 @@ return [
             'title' => 'Mức Cấp điện',
             'link' => '/admin/muc-cap-dien',
             'active' => 'admin/muc-cap-dien',
-            'icon' => 'icon-fa icon-fa-th-large',
+            'icon' => 'icon-fa icon-fa-battery-three-quarters',
             'access' => [User::ROLE[0]]
         ],
         [
@@ -105,13 +105,10 @@ return [
         ],
         [
             'title' => 'Thống kê',
-            'link' => '#',
-            'active' => 'admin/thong-ke/*',
-            'icon' => 'icon-fa icon-fa-users',
-            'access' => [User::ROLE[0]],
-            'children' => [
-
-            ]
+            'link' => 'admin/thong-ke',
+            'active' => 'admin/thong-ke',
+            'icon' => 'icon-fa icon-fa-area-chart',
+            'access' => [User::ROLE[0]]
         ],
     ],
 

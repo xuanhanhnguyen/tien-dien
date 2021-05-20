@@ -20,7 +20,10 @@
                             @csrf
                             <div class="modal-body">
                                 <div class="card-body">
-
+                                    @php
+                                        $month = $month = date('m');
+                                        $year = date('Y');
+                                    @endphp
                                     <div class="form-group">
                                         <label for="ma_dksd_dien">Mã hồ sơ</label>
                                         <select onchange="location.href = '/admin/hoa-don/create?id='+$('#ma_dksd_dien').val()"
@@ -38,9 +41,32 @@
                                         </small>
                                     </div>
 
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="thang">Tháng</label>
+                                                <select class="form-control" name="thang" id="" required>
+                                                    @for($i = 1; $i<13;$i++)
+                                                        <option @if($month == $i) selected
+                                                                @endif value="{{$i}}">{{$i}}</option>
+                                                    @endfor
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="chi_so_moi">Năm</label>
+                                                <select class="form-control" name="name" id="" required>
+                                                    <option>{{$year}}</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+
                                     @if(isset($hs->mcd) && $hs->mcd->loai_gia == 2)
                                         <div class="form-group">
-                                            <label for="tu_so['binh_thuong']">Từ số</label>
+                                            <label for="tu_so['binh_thuong']">Chỉ số cũ</label>
                                             <div class="row">
                                                 <div class="col-md-4">
                                                     <input type="number" value="0" class="form-control"
@@ -75,7 +101,7 @@
                                         </div>
 
                                         <div class="form-group">
-                                            <label for="den_so">Đến số</label>
+                                            <label for="den_so">Chỉ số mới</label>
                                             <div class="row">
                                                 <div class="col-md-4">
                                                     <input type="number" value="0" class="form-control"
@@ -109,43 +135,55 @@
                                             </div>
                                         </div>
                                     @else
-                                        <div class="form-group">
-                                            <label for="chi_so_cu">Từ số</label>
-                                            <input type="number" value="0" class="form-control" id="chi_so_cu"
-                                                   placeholder="Nhập số"
-                                                   name="chi_so_cu" required>
-                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label for="chi_so_cu">Chỉ số cũ</label>
+                                                    <input type="number" value="0" class="form-control" id="chi_so_cu"
+                                                           placeholder="Nhập số"
+                                                           name="chi_so_cu" required>
+                                                </div>
+                                            </div>
 
-                                        <div class="form-group">
-                                            <label for="chi_so_moi">Đến số</label>
-                                            <input type="number" value="0" class="form-control" id="chi_so_moi"
-                                                   placeholder="Nhập số"
-                                                   name="chi_so_moi" required>
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label for="chi_so_moi">Chỉ số mới</label>
+                                                    <input type="number" value="0" class="form-control" id="chi_so_moi"
+                                                           placeholder="Nhập số"
+                                                           name="chi_so_moi" required>
+                                                </div>
+                                            </div>
                                         </div>
                                     @endif
 
-                                    <div class="form-group">
-                                        <label for="tu_ngay">Từ ngày</label>
-                                        <div class="input-group">
-                                            <input type="text" class="form-control ls-datepicker"
-                                                   name="tu_ngay" id="tu_ngay">
-                                            <div class="input-group-append">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="tu_ngay">Từ ngày</label>
+                                                <div class="input-group">
+                                                    <input type="text" class="form-control ls-datepicker"
+                                                           name="tu_ngay" id="tu_ngay">
+                                                    <div class="input-group-append">
                                                 <span class="input-group-text">
                                                         <i class="icon-fa icon-fa-calendar"></i>
                                                 </span>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
 
-                                    <div class="form-group">
-                                        <label for="den_ngay">Đến ngày</label>
-                                        <div class="input-group">
-                                            <input type="text" class="form-control ls-datepicker"
-                                                   name="den_ngay" id="den_ngay">
-                                            <div class="input-group-append">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="den_ngay">Đến ngày</label>
+                                                <div class="input-group">
+                                                    <input type="text" class="form-control ls-datepicker"
+                                                           name="den_ngay" id="den_ngay">
+                                                    <div class="input-group-append">
                                                 <span class="input-group-text">
                                                         <i class="icon-fa icon-fa-calendar"></i>
                                                 </span>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>

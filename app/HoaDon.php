@@ -11,7 +11,7 @@ class HoaDon extends Model
 
     protected $table = 'hoa_don';
 
-    protected $fillable = ['ma_dksd_dien', 'chi_so_cu', 'chi_so_moi', 'thue_gtgt', 'tong_tien', 'tu_ngay', 'den_ngay', 'trang_thai'];
+    protected $fillable = ['ma_dksd_dien', 'chi_so_cu', 'chi_so_moi', 'thue_gtgt', 'tong_tien', 'tu_ngay', 'den_ngay', 'trang_thai', 'nam', 'thang', 'auto'];
 
     protected $dates = ['created_at', 'updated_at'];
 
@@ -25,5 +25,13 @@ class HoaDon extends Model
     public function isCustomer()
     {
         return $this->ho_so()->where('ma_khach_hang', \request()->id ?? \Auth::id());
+    }
+
+    public function scopeWhereDate($query, $thang, $nam)
+    {
+        return $query->where([
+            ['thang', $thang],
+            ['nam', $nam]
+        ]);
     }
 }

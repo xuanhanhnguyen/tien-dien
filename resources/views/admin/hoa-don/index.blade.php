@@ -5,15 +5,29 @@
 @stop
 
 @section('content')
+    @php
+        $month = $month = date('m');
+        $year = date('Y');
+    @endphp
     <div class="main-content">
         <div class="page-header">
-            <h3 class="page-title">Hóa đơn tiền điện</h3>
+            <h3 class="page-title">Điện kế</h3>
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="{{route('admin.dashboard')}}">Trang chủ</a></li>
-                <li class="breadcrumb-item active">Đăng ký sử dụng điện</li>
+                <li class="breadcrumb-item active">Điện kế</li>
             </ol>
             @if(Auth::user()->role === "Admin")
                 <div class="page-actions">
+                    @if((!isset($_GET['nam']) && !isset($_GET['thang'])) || ($_GET['thang'] == $month && $_GET['nam'] == $year))
+                        @if($checkAuto == 0)
+                            <a href="#" data-toggle="modal" data-target=".create_hoa_don" class="btn btn-warning">
+                                <i class="icon-fa icon-fa-plus"></i> Thêm tự động</a>
+                        @else
+                            <a href="#" data-toggle="modal" data-target=".create_hoa_don" class="btn btn-warning">
+                                <i class="icon-fa icon-fa-pencil"></i> Cập nhật tự động</a>
+                        @endif
+                    @endif
+
                     <a href="/admin/hoa-don/create" class="btn btn-primary">
                         <i class="icon-fa icon-fa-plus"></i>Thêm mới</a>
                 </div>
@@ -41,11 +55,43 @@
             </div>
         @endif
 
+        <form action="" method="get">
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="form-group d-flex align-items-center">
+                        <label class="mb-0 mr-1" for="">Tháng: </label>
+                        <select class="form-control" name="thang" id="">
+                            @if(!isset($_GET['thang']))
+                                @for($i = 1; $i<13;$i++)
+                                    <option @if($month == $i) selected @endif value="{{$i}}">{{$i}}</option>
+                                @endfor
+                            @else
+                                @for($i = 1; $i<13;$i++)
+                                    <option @if($_GET['thang'] == $i) selected @endif value="{{$i}}">{{$i}}</option>
+                                @endfor
+                            @endif
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group d-flex align-items-center">
+                        <label class="mb-0 mr-1" for="">Năm: </label>
+                        <select class="form-control" name="nam" id="">
+                            <option>{{$year}}</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <button class="btn btn-primary" type="submit">Lọc</button>
+                </div>
+            </div>
+        </form>
+
         <div class="row">
             <div class="col-sm-12">
                 <div class="card">
                     <div class="card-header">
-                        <h6>Hóa đơn tiền điện</h6>
+                        <h6>Danh sách chỉ số điện</h6>
                     </div>
                     <div class="card-body">
                         <table id="users-datatable" class="table table-striped table-bordered table-responsive-lg"
@@ -106,7 +152,12 @@
                                             <i class="icon-fa icon-fa-plus"></i> Hóa đơn</a>
                                         <a href="{{route('hoa-don.edit',$item->ma_hoa_don)}}"
                                            class="btn btn-default btn-sm"><i
-                                                    class="icon-fa icon-fa-edit"></i> Chỉnh sửa</a>
+                                                    class="icon-fa icon-fa-edit"></i>
+                                            @if(Auth::user()->role == "Nhân viên")
+                                                Nhập chỉ số
+                                            @else
+                                                Chỉnh sửa
+                                            @endif</a>
                                         @if(Auth::user()->role === "Admin")
                                             <form id="form-delete"
                                                   action="{{route('hoa-don.destroy',$item->ma_hoa_don)}}"
@@ -428,9 +479,11 @@
                                         </tr>
                                         </tbody>
                                     </table>
-                                    
+
                                     <div class="text-center">
-                                        <a href="/admin/hoa-don/{{$item->ma_hoa_don}}" target="_blank"><button class="btn-info btn">In hóa đơn</button></a>
+                                        <a href="/admin/hoa-don/{{$item->ma_hoa_don}}" target="_blank">
+                                            <button class="btn-info btn">In hóa đơn</button>
+                                        </a>
                                     </div>
                                 </div>
                             </div>
@@ -440,5 +493,96 @@
                 </div>
             </div>
         @endforeach
+    </div>
+
+
+    <div class="modal fade create_hoa_don" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    @if($checkAuto == 0)
+                        <h5 class="modal-title">Thêm hồ sơ tự động</h5>
+                    @else
+                        <h5 class="modal-title">Cập nhật hồ sơ tự động</h5>
+                    @endif
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form action="@if($checkAuto == 0){{route('hoa-don.create.auto')}}@else{{route('hoa-don.update.auto')}} @endif"
+                      method="POST">
+                    @csrf
+
+                    <div class="modal-body">
+                        <div class="card-body">
+
+                            <div class="row">
+                                <div class="form-group col-md-3">
+                                    <label for="tu_ngay">Từ ngày</label>
+                                    <select class="form-control" name="tu_ngay" id="tu_ngay">
+                                        @for($i = 1; $i<32;$i++)
+                                            <option @if($i == 16) selected @endif value="{{$i}}">{{$i}}</option>
+                                        @endfor
+                                    </select>
+                                    <small>Tháng trước</small>
+                                </div>
+
+                                <div class="form-group col-md-3">
+                                    <label for="den_ngay">Đến ngày</label>
+                                    <select class="form-control" name="den_ngay" id="den_ngay">
+                                        @for($i = 1; $i<32;$i++)
+                                            <option @if($i == 15) selected @endif value="{{$i}}">{{$i}}</option>
+                                        @endfor
+                                    </select>
+                                </div>
+
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="thang">Tháng</label>
+                                        <input type="text" class="form-control" name="thang" id="thang"
+                                               value="{{$month}}"
+                                               disabled/>
+                                        <input type="hidden" class="form-control" name="thang" id="thang"
+                                               value="{{$month}}"/>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="nam">Năm</label>
+                                        <input type="text" class="form-control" name="nam" id="nam" value="{{$year}}"
+                                               disabled/>
+                                        <input type="hidden" class="form-control" name="nam" id="nam"
+                                               value="{{$year}}"/>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-check">
+                                <label class="form-check-label">
+                                    <input type="checkbox" class="form-check-input" name="_update" id="_update"
+                                           checked>
+                                    @if($checkAuto == 0)
+                                        Cập nhật lại hồ sơ hiện có
+                                    @else
+                                        Thêm mới hồ sơ còn thiếu
+                                    @endif
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+                        <button type="submit" class="btn btn-primary">
+                            @if($checkAuto == 0)
+                                Thêm
+                            @else
+                                Cập nhật
+                            @endif
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
 @stop
