@@ -110,7 +110,6 @@ class UsersController extends Controller
     {
         try {
             $user = User::findOrFail($id);
-            dd($user);
 
             if ($user->use->count() > 0) {
                 flash('error')->error('Xóa thất bại, tài khoản đã ĐKSD điện.');
