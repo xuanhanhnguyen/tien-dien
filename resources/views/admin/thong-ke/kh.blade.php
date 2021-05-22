@@ -13,7 +13,7 @@
                 labels: label,
                 datasets: [
                     {
-                        label: "Số hóa đơn",
+                        label: "Điện năng tiêu thụ",
                         // backgroundColor: 'rgba(60,141,188,0.9)',
                         borderColor: 'rgba(60,141,188,0.8)',
                         pointRadius: true,
@@ -22,7 +22,8 @@
                         pointHighlightFill: '#fff',
                         pointHighlightStroke: 'rgba(60,141,188,1)',
                         showLine: true,
-                        data: data
+                        data: data,
+
                     }
 
                 ]
@@ -32,8 +33,8 @@
             // //-------------
             // //- BAR CHART -
             // //-------------
-            var barChartCanvas = $('#day').get(0).getContext('2d')
-            var barChartData = jQuery.extend(true, {}, areaChartData)
+            var barChartCanvas = $('#day').get(0).getContext('2d');
+            var barChartData = jQuery.extend(true, {}, areaChartData);
 
             var barChartOptions = {
                 responsive: true,
@@ -42,7 +43,10 @@
                 scales: {
                     yAxes: [{
                         ticks: {
-                            beginAtZero: true
+                            beginAtZero: true,
+                            callback: function (value, index, values) {
+                                return Math.round(value * 100) / 100 + 'kwh';
+                            }
                         },
                     }]
                 },
@@ -57,7 +61,7 @@
                 type: 'line',
                 data: barChartData,
                 options: barChartOptions
-            })
+            });
         });
     </script>
 @stop
@@ -99,19 +103,15 @@
 
         <form action="" method="get">
             <div class="row">
-                <div class="col-md-3">
+                <div class="col-md-6">
                     <div class="form-group d-flex align-items-center">
-                        <label class="mb-0 mr-1" for="">Tháng: </label>
-                        <select class="form-control" name="thang" id="">
-                            @if(!isset($_GET['thang']))
-                                @for($i = 1; $i<13;$i++)
-                                    <option @if($month == $i) selected @endif value="{{$i}}">{{$i}}</option>
-                                @endfor
-                            @else
-                                @for($i = 1; $i<13;$i++)
-                                    <option @if($_GET['thang'] == $i) selected @endif value="{{$i}}">{{$i}}</option>
-                                @endfor
-                            @endif
+                        <label class="mb-0 mr-1 d-block" style="width: 55px" for="">Hồ sơ: </label>
+                        <select class="form-control" name="dksd_id" id="">
+                            @foreach($dksd as $item)
+                                <option @if($dksd_id == $item->ma_dksd_dien) selected
+                                        @endif value="{{$item->ma_dksd_dien}}">{{$item->ma_dksd_dien}}
+                                    - {{$item->dia_chi}}</option>
+                            @endforeach
                         </select>
                     </div>
                 </div>
@@ -133,7 +133,7 @@
             <div class="col-sm-12">
                 <div class="card">
                     <div class="card-header">
-                        <h6>Thông kê hóa đơn theo trạng thái</h6>
+                        <h6>Thông kê chỉ số điện</h6>
                     </div>
                     <div class="card-body">
                         <div class="chart">

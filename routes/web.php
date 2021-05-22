@@ -155,6 +155,7 @@ Route::group(['prefix' => 'admin', 'middleware' => 'auth'], function () {
     Route::post('hoa-dơn/create-auto', 'HoaDonController@createAuto')->name('hoa-don.create.auto');
     Route::post('hoa-dơn/update-auto', 'HoaDonController@updateAuto')->name('hoa-don.update.auto');
     Route::get('thong-ke', 'ThongKeController@index')->name('thong-ke.index');
+    Route::get('thong-ke/khach-hang', 'ThongKeController@khachHang')->name('thong-ke.kh');
     // Settings
     //----------------------------------
 });

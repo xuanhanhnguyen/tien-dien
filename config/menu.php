@@ -105,11 +105,26 @@ return [
         ],
         [
             'title' => 'Thống kê',
-            'link' => 'admin/thong-ke',
+            'link' => '#',
             'active' => 'admin/thong-ke',
             'icon' => 'icon-fa icon-fa-area-chart',
-            'access' => [User::ROLE[0]]
+            'access' => [User::ROLE[0], User::ROLE[2]],
+            'children' => [
+                [
+                    'title' => 'Thống kê hóa đơn',
+                    'link' => '/admin/thong-ke',
+                    'active' => '/admin/thong-ke',
+                    'access' => [User::ROLE[0]]
+                ],
+                [
+                    'title' => 'Thống kê chỉ số điện',
+                    'link' => 'admin/thong-ke/khach-hang',
+                    'active' => 'admin/thong-ke/khach-hang',
+                    'access' => [User::ROLE[2]],
+                ],
+            ]
         ],
+
     ],
 
     // HORIZONTAL MENU LAYOUT -  MENU
